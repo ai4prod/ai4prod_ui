@@ -11,7 +11,7 @@ project(imgui_example)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED)
 
-
+find_package(OpenCV 4.4 EXACT REQUIRED PATHS deps/opencv/Release/)
 
 
 set(PRJ_LIBRARIES 
@@ -22,6 +22,7 @@ set(PRJ_LIBRARIES
     imgui::imgui
     # opengl
     OpenGL::GL
+    ${OpenCV_LIBS}
 )
 
 find_package(imgui CONFIG REQUIRED)
@@ -32,4 +33,4 @@ find_package(fmt CONFIG REQUIRED)
 
 add_executable(imgui_example main.cpp)
 
-target_link_libraries(imgui_example PRIVATE ${PRJ_LIBRARIES})
+target_link_libraries(imgui_example PRIVATE ${PRJ_LIBRARIES} )
