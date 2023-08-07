@@ -1,0 +1,4 @@
+server: "localhost"
+db_name: "python_test"
+driver: "{ODBC Driver 17 for SQL Server}"
+trusted_connection: "Yes"

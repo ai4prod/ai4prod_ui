@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block body %}
+
+<div class="containerd-flex flex-column">
+  {% include "page/component/nav_bar.html" %}
+  
+  <div class="container mt-4">
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+               
+                {% for key in list_experiments_dict[0].keys() %}
+                <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in list_experiments_dict %}
+            <tr>
+                {% for key, value in item.items() %}
+                    <td onclick="expandCell(this)" class="truncate-custom">{{ value }}</td>
+                {% endfor %}
+            </tr>
+          
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+  </div>
+
+<script>
+    function expandCell(cell) {
+        cell.classList.toggle("expanded");
+    }
+</script>
+
+  {% endblock %}

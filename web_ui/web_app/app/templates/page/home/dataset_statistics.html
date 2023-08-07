@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block body %}
+
+<div class="containerd-flex flex-column">
+    {% include "page/component/nav_bar.html" %}
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-6">
+                <h2>Version List </h2>
+
+                <table class="table table-bordered table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Date</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>13/03/2023</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-3">
+                <button class="btn btn-primary"> Add New Version</button>
+            </div>
+
+            <div class="col-3">
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

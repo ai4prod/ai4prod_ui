@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block body %}
+
+<div class="containerd-flex flex-column">
+  {% include "page/component/nav_bar.html" %}
+  
+  <div class="container mt-4">
+    <h1>Configurazione di Training</h1>
+    <form action="{{url_for('home.training')}}" method="POST" enctype="multipart/form-data">
+      <input type="file" name="file">
+      <input type="submit" value="Upload">
+    </form>
+
+    <a href="{{ url_for('home.training_metrics') }}" class="btn btn-primary">Go to Other Page</a>
+
+    {% if filename %}
+    <p>Uploaded Filename: <b>{{ filename }}</b></p>
+    {% endif %}
+
+    {% include "page/turbo_component/epoch_counter.html" %}
+    {% include "page/turbo_component/loss_chart.html" %}
+
+  </div>
+
+</div>
+
+
+
+<!-- https://stackoverflow.com/a/30011819 -->
+<!-- <script type="text/javascript" src="{{url_for('static', filename='js/index.js')}}"></script> -->
+
+</div>
+
+{% endblock %}

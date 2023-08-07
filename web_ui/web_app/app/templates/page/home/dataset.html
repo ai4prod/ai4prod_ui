@@ -1,0 +1,95 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block body %}
+
+<div class="containerd-flex flex-column">
+
+    {% include "page/component/nav_bar.html" %}
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col-6">
+                <h2>Create Dataset Configuration</h2>
+            </div>
+            <div class="col"></div>
+
+        </div>
+        <div class="row">
+
+            <div class="col"></div>
+            <div class="col-6">
+                <form action="{{url_for('home.dataset')}}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="local_path">Local Repo Path:</label>
+                        <input type="text" class="form-control" name="local_path" id="local_path">
+                    </div>
+                    <div class="form-group">
+                        <label for="repo_name">Repository Name</label>
+                        <input type="text" class="form-control" name="repo_name" id="repo_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="bitbucket_user">User:</label>
+                        <input type="text" class="form-control" name="bitbucket_user" id="bitbucket_user">
+                    </div>
+                    <div class="form-group">
+                        <label for="bitbucket_password">Bitbucket Oauth Key:</label>
+                        <input type="password" class="form-control" name="bitbucket_password" id="bitbucket_password">
+                    </div>
+                    <div class="form-group">
+                        <label for="bitbucket_workspace">Bitbucket Workspace:</label>
+                        <input type="text" class="form-control" name="bitbucket_workspace" id="bitbucket_workspace">
+                    </div>
+                    <div class="form-group">
+                        <label for="dvc_remote_ssh_user">Remote ssh User:</label>
+                        <input type="text" class="form-control" name="dvc_remote_ssh_user" id="dvc_remote_ssh_user">
+                    </div>
+                    <div class="form-group">
+                        <label for="dvc_remote_ssh_psw">Remote ssh Password:</label>
+                        <input type="password" class="form-control" name="dvc_remote_ssh_psw" id="dvc_remote_ssh_psw">
+                    </div>
+                    <div class="form-group">
+                        <label for="dvc_remote_ssh_ip">Remote ssh IP:</label>
+                        <input type="text" class="form-control" name="dvc_remote_ssh_ip" id="dvc_remote_ssh_ip">
+                    </div>
+                    <div class="form-group">
+                        <label for="dvc_remote_path">Dvc Remote Path:</label>
+                        <input type="text" class="form-control" name="dvc_remote_path" id="dvc_remote_path">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="col"></div>
+        </div>
+        <div class="row">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Local Path</th>
+                        <th>Remote Path</th>
+                        <th>Current Version</th>
+                        <th>Add New Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dataset in datasets_list %}
+                    <tr>
+                        <td onclick="expandCell(this)" class="truncate-custom">{{ dataset.local_path }}</td>
+                        <td onclick="expandCell(this)" class="truncate-custom">{{ dataset.git_remote_path }}</td>
+                        <td onclick="expandCell(this)" class="truncate-custom">Current Version</td>
+                        <td onclick="expandCell(this)" class="truncate-custom"><a href="{{ url_for('home.dataset_statistics', dataset_id=dataset.id) }}">Stats</a></td>
+                    </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function expandCell(cell) {
+        cell.classList.toggle("expanded");
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+<div id="chart1">
+
+ 
+</div>
+
+<script type="text/javascript">
+    var loss_train_graph = {{ loss_train | safe}};
+    Plotly.plot("chart1", loss_train_graph, {});
+</script>
