@@ -380,18 +380,16 @@ class DatasetHandler():
 
 if __name__ == "__main__":
 
-    #bitbucket= BicbucketConnection(username="erict90",password="ATBBPj2JxqBFwUf3Q8qaEc6mH5Ra2AE26169")
+    #bitbucket= BicbucketConnection(username="",password="")
     # bitbucket.get_all_projects("vedev-2")
 
     #bitbucket.create_repository("test_python_api","vedev-2","create from python api")
     # gitHandler = GitHandler("C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\",
-    #                         "https://erict90@bitbucket.org/vedev-2/test_python_api.git")
+    #                         "")
     # gitHandler.clone_repository()
     #gitHandler.add_and_commit("commit from python")
     # gitHandler.add_update_submodule()
     local_repo_path = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\"
-    bit_user = "erict90"
-    bit_psw = "ATBBPj2JxqBFwUf3Q8qaEc6mH5Ra2AE26169"
     bit_repo_name = "test_python"
     bit_workspace_name = "vedev-2"
 
