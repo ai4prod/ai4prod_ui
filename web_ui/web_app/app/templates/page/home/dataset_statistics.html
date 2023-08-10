@@ -19,11 +19,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>13/03/2023</td>
-                        </tr>
 
+                        {% for dataset_version in datasets_versions_list %}
+                        <tr>
+                            <td>{{dataset_version.tag_version}}</td>
+                            <td>{{dataset_version.timestamp}}</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -33,7 +35,7 @@
             </div>
 
             <div class="col-3">
-
+                {% include "page/turbo_component/dataset_change.html" %}
             </div>
 
         </div>

@@ -8,6 +8,10 @@ import os
 import shutil
 
 
+
+
+
+
 class BicbucketConnection():
     """
     See this to understand how to setup connection
@@ -182,12 +186,13 @@ class DvcHandler():
         self.dvc_file_list = []
 
     def execute_pipeline_commands(self, pipeline):
+        output=[]
         for command in pipeline:
-            print(f"-- {' '.join(command)} --")
+            #print(f"-- {' '.join(command)} --")
             result = subprocess.run(
                 command, cwd=self.local_repo, capture_output=True, text=True)
-            print(result.stdout)
-            input("t")
+            output.append(result.stdout.strip())
+        return output
 
     def setup_remote(self,):
 
@@ -236,10 +241,25 @@ class DvcHandler():
 
         self.execute_pipeline_commands(push_dataset_remote)
         print("dvc Update Dataset")
+    
+    def check_status(self):
+
+        check_pipeline=[
+            ["dvc","status"]
+        ]
+        result=self.execute_pipeline_commands(check_pipeline)
+
+        return True if ("changed" in result[0] or "modified" in result[0]) else False 
+
 
 
 class DatasetHandler():
 
+    def __init__(self) -> None:
+        self.bitbucket=None
+        self.gitHandler=None
+        self.dvcHandler=None
+        
     """
     This class will implementh method to init and update dataset version
     :param local_repo_path: Path to folder without bitbucket_repository_name for example /Home/Ubuntu/{bitbucket_repository_name}
@@ -250,26 +270,32 @@ class DatasetHandler():
     :param bitbucket_repository_name remote repository name
     :param bitbucket_workspace_name remote bitbucket workspace name
     """
-
-    def __init__(self,
-                 local_repo_path: str,
-                 bibucket_username: str,
-                 bitbucket_password: str,
-                 bitbucket_repository_name: str,
-                 bitbucket_workspace_name: str,
-                 dvc_remote_path: str,
-                 dvc_remote_ssh_user=None,
-                 dvc_remote_ssh_psw=None,
-                 dvc_remote_ssh_ip=None,
-                 create_repository=True,
-                 ) -> None:
+    def setup(self,
+                local_repo_path: str,
+                bibucket_username: str,
+                bitbucket_password: str,
+                bitbucket_repository_name: str,
+                bitbucket_workspace_name: str,
+                dvc_remote_path: str,
+                dvc_remote_ssh_user=None,
+                dvc_remote_ssh_psw=None,
+                dvc_remote_ssh_ip=None,
+                create_repository=True,
+                ) -> None:
 
         print(bibucket_username)
-        print(bitbucket_password)
+        
+        if (self.bitbucket is not None):
+            self.bitbucket=None
+        if (self.dvcHandler is not None):
+            self.dvcHandler=None
+        if (self.gitHandler is not None):
+            self.gitHandler=None
+
         self.bitbucket = BicbucketConnection(username=bibucket_username,
-                                             password=bitbucket_password,
-                                             repo_name=bitbucket_repository_name,
-                                             workspace_name=bitbucket_workspace_name)
+                                            password=bitbucket_password,
+                                            repo_name=bitbucket_repository_name,
+                                            workspace_name=bitbucket_workspace_name)
         if(create_repository):
             self.bitbucket.create_repository(
                 repo_description="create from python")
@@ -280,11 +306,11 @@ class DatasetHandler():
         self.gitHandler = GitHandler(local_repo_path, remote_repo_url)
 
         self.dvcHandler = DvcHandler(local_repo=self.gitHandler.local_repo_path,
-                                     dvc_remote_path=dvc_remote_path,
-                                     dvc_remote_ssh_user=dvc_remote_ssh_user,
-                                     dvc_remote_ssh_psw=dvc_remote_ssh_psw,
-                                     dvc_remote_ssh_ip=dvc_remote_ssh_ip)
-
+                                    dvc_remote_path=dvc_remote_path,
+                                    dvc_remote_ssh_user=dvc_remote_ssh_user,
+                                    dvc_remote_ssh_psw=dvc_remote_ssh_psw,
+                                    dvc_remote_ssh_ip=dvc_remote_ssh_ip)
+    
     def getCurretFileConfLocation(self, repo_template_name="data_versioning_template"):
         """
         :param task select type of task for example classification. This needs to have the same folder name of the task
@@ -345,12 +371,12 @@ class DatasetHandler():
 
         """
 
-        # self.gitHandler.clone_repository()
-        # self.copyFoldersFromTemplateRepo(task_name)
-        # self.gitHandler.add_update_submodule()
-        # self.gitHandler.add_and_commit("init dataset")
-        # self.gitHandler.push_to_remote()
-        # self.dvcHandler.init_git_repo_with_dvc()
+        self.gitHandler.clone_repository()
+        self.copyFoldersFromTemplateRepo(task_name)
+        self.gitHandler.add_update_submodule()
+        self.gitHandler.add_and_commit("init dataset")
+        self.gitHandler.push_to_remote()
+        self.dvcHandler.init_git_repo_with_dvc()
         self.gitHandler.add_and_commit("initialize Data/Dataset with dvc")
         self.gitHandler.push_to_remote()
 
@@ -378,8 +404,20 @@ class DatasetHandler():
         self.dvcHandler.push_to_remote()
 
 
+datasetHandler= DatasetHandler()
+
 if __name__ == "__main__":
 
+    
+    data_file_path = 'C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python\\'
+    result = subprocess.run(
+                ['dvc', 'status'], cwd=data_file_path, capture_output=True, text=True)
+
+    output=result.stdout.strip()
+    
+    if "changed" in output or "modified" in output:
+        
+        input("t")
     #bitbucket= BicbucketConnection(username="",password="")
     # bitbucket.get_all_projects("vedev-2")
 
@@ -389,23 +427,23 @@ if __name__ == "__main__":
     # gitHandler.clone_repository()
     #gitHandler.add_and_commit("commit from python")
     # gitHandler.add_update_submodule()
-    local_repo_path = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\"
-    bit_repo_name = "test_python"
-    bit_workspace_name = "vedev-2"
+    # local_repo_path = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\"
+    # bit_repo_name = "test_python"
+    # bit_workspace_name = "vedev-2"
 
-    remote_dvc = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python_remote\\"
+    # remote_dvc = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python_remote\\"
 
-    datasetHan = DatasetHandler(local_repo_path=local_repo_path,
-                                bibucket_username=bit_user,
-                                bitbucket_password=bit_psw,
-                                bitbucket_repository_name=bit_repo_name,
-                                bitbucket_workspace_name=bit_workspace_name,
-                                dvc_remote_path=remote_dvc,
-                                create_repository=False)
+    # datasetHan = DatasetHandler(local_repo_path=local_repo_path,
+    #                             bibucket_username=bit_user,
+    #                             bitbucket_password=bit_psw,
+    #                             bitbucket_repository_name=bit_repo_name,
+    #                             bitbucket_workspace_name=bit_workspace_name,
+    #                             dvc_remote_path=remote_dvc,
+    #                             create_repository=False)
 
     # #datasetHan.copyFoldersFromTemplateRepo("classification")
-    #datasetHan.initDataset()
-    datasetHan.updateTag("v1")
+    # datasetHan.initDataset()
+    # datasetHan.updateTag("v1")
     # remote_dvc = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python_remote\\"
 
     # dvcHandler = DvcHandler(local_repo=local_repo_path,

@@ -1,6 +1,7 @@
 import threading
 from .turbo_wrapper import turboWrapper
 from app import app_instance
+from app.data.dataset import datasetHandler
 import time
 from flask import render_template
 import random
@@ -11,15 +12,27 @@ import json
 import plotly
 
 def update_load():
+
+    
     index=0
     with app_instance.app_context():
         while True:
             index= index +1
             data_instance.loss[index] = random.random()
             
-            time.sleep(100)
+           
+
+            if(datasetHandler.dvcHandler is not None):
+
+                data_instance.dataset_change= datasetHandler.dvcHandler.check_status()
+
+                
+            
+            
+            time.sleep(1)
             turboWrapper.turbo.push(turboWrapper.turbo.replace(render_template('page/turbo_component/epoch_counter.html'), 'epoch_counter'))
             turboWrapper.turbo.push(turboWrapper.turbo.replace(render_template('page/turbo_component/loss_chart.html'), 'chart1'))
+            turboWrapper.turbo.push(turboWrapper.turbo.replace(render_template('page/turbo_component/dataset_change.html'), 'dataset_change'))
             
             
 
@@ -32,7 +45,7 @@ def before_first_request():
 @app_instance.context_processor
 def inject_load():
     #print("load inject")
-    print(data_instance.epoch_counter)
+    
     
     load = [int(random.random() * 100) / 100 for _ in range(3)]
 
@@ -49,4 +62,4 @@ def inject_load():
     loss_train=json.dumps(fig,cls= plotly.utils.PlotlyJSONEncoder)
 
 
-    return {'load1': load[0], 'load5': load[1], 'load15': load[2],"loss_train":loss_train}
+    return {'load1': load[0], 'load5': load[1], 'load15': load[2],"loss_train":loss_train, "dataset_change":data_instance.dataset_change}

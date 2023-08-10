@@ -7,4 +7,5 @@ class Data:
     def __init__(self) -> None:
 
         self.epoch_counter=0
-        self.loss={}    
+        self.loss={}
+        self.dataset_change=False    

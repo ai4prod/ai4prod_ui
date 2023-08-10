@@ -158,10 +158,11 @@ class Dataset(db_instance.db.Model):
 
     id = Column(Integer, primary_key=True)
     init= Column(Boolean,default=False)
+    repo_name= Column(String(40))
     local_path = Column(String(200))
     git_remote_path = Column(String(200))
     bitbucket_user= Column(String(60))
-    bibucket_password= Column(String(60))
+    bitbucket_password= Column(String(60))
     bitbucket_workspace= Column(String(60))
     dvc_remote_ssh_user = Column(String(60))
     dvc_remote_ssh_psw = Column(String(60))
@@ -173,7 +174,7 @@ class DatasetVersion(db_instance.db.Model):
     __tablename__ = 'dataset_version'
 
     id = Column(Integer, primary_key=True)
-    version = Column(String(10))
+    tag_version = Column(String(10))
     timestamp = Column(String(20))
     dataset_id = Column(Integer, ForeignKey('dataset.id'))
     dataset = relationship('Dataset', back_populates='dataset_version')

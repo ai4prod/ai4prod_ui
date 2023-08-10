@@ -38,6 +38,7 @@ with open(yaml_cfg, "r") as yaml_file:
 
 application = create_app("config.DevelopmentConfig", db_uri)
 
+#After app initialization import turbo_wrapper call
 import app.turbo_wrapper.turbo_wrapper_call
 
 """
@@ -47,4 +48,4 @@ https://stackoverflow.com/a/63892938
 """
 if __name__ == "__main__":
 
-    application.run(host="127.0.0.1", port=4040, use_reloader=True, debug=True)
+    application.run(host="127.0.0.1", port=4040, debug=True)
