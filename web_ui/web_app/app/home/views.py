@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, Response, make_response, session, current_app
+from flask import render_template, request, jsonify, Response, make_response, session, current_app,redirect,url_for
 import flask
 from . import home
 from pathlib import Path
@@ -20,6 +20,7 @@ from sqlalchemy import desc
 import datetime
 from app.data.dataset import DatasetHandler, datasetHandler
 import datetime
+from app.home import data_instance
 
 # Dove sono arrivato
 """
@@ -63,8 +64,10 @@ def dataset():
 
         datasetHandler.initDataset()
         git_remote_path = datasetHandler.gitHandler.remote_repo_url
-
+        
+        tag_version="0"
         new_dataset = Dataset(init=True,
+                              current_version=tag_version,
                               repo_name=repo_name,
                               local_path=local_path,
                               git_remote_path=git_remote_path,
@@ -78,7 +81,7 @@ def dataset():
         db_instance.db.session.add(new_dataset)
         db_instance.db.session.commit()
 
-        tag_version="0"
+        
        
         # new Dataset will inited always with version 0
         datasetHandler.updateTag(tag_version=tag_version)
@@ -91,8 +94,6 @@ def dataset():
         db_instance.db.session.add(init_dataset_version)
         db_instance.db.session.commit()
 
-        datasetHandler = None
-
     datasets_list = Dataset.query.all()
 
     return render_template("page/home/dataset.html", datasets_list=datasets_list)
@@ -101,12 +102,9 @@ def dataset():
 @home.route("/dataset_statistics/<int:dataset_id>", methods=['GET', 'POST'])
 def dataset_statistics(dataset_id):
 
-    
-
-   
 
     # retrive data for selected dataset
-    dataset_query = Dataset.query.filter(Dataset.id == dataset_id).first()
+    
     dataset_version_query = DatasetVersion.query.all()
 
     print(dataset_version_query)
@@ -120,22 +118,70 @@ def dataset_statistics(dataset_id):
         dataset_version.timestamp = formatted_date
         print(dataset_version.timestamp)
 
-        datasetHandler.setup(local_repo_path=dataset_query.local_path,
-                                        dvc_remote_path=dataset_query.dvc_remote_path,
-                                        bibucket_username=dataset_query.bitbucket_user,
-                                        bitbucket_password=dataset_query.bitbucket_password,
-                                        bitbucket_repository_name=dataset_query.repo_name,
-                                        bitbucket_workspace_name=dataset_query.bitbucket_workspace,
-                                        create_repository=False)
-        print("VIEWS")
-        print(datasetHandler is None)
 
-    # Create Dataset Handler
-    # Update Tag on Button Pressed
+    dataset_query = Dataset.query.filter(Dataset.id == dataset_id).first()
+    datasetHandler.setup(local_repo_path=dataset_query.local_path,
+                                    dvc_remote_path=dataset_query.dvc_remote_path,
+                                    bibucket_username=dataset_query.bitbucket_user,
+                                    bitbucket_password=dataset_query.bitbucket_password,
+                                    bitbucket_repository_name=dataset_query.repo_name,
+                                    bitbucket_workspace_name=dataset_query.bitbucket_workspace,
+                                    create_repository=False)
+    data_instance.current_dataset_id= dataset_id
 
-    # How to verify if some data were added?
+    return render_template("page/home/dataset_statistics.html", datasets_versions_list=dataset_version_query,dataset_id=dataset_id)
 
-    return render_template("page/home/dataset_statistics.html", datasets_versions_list=dataset_version_query)
+
+@home.route("/update_dataset_version/<int:dataset_id>/")
+def update_dataset_version(dataset_id):
+
+    print("CHANGE_DATASET_VERSION")
+    print(dataset_id)
+    
+
+    #datasetHandler is already initialized from dataset_statistics. 
+    # WARNING removing datasetHandler initialization from dataset_statistics 
+    # route will cause failure on this 
+    
+    dataset_version_query = DatasetVersion.query.order_by(desc(DatasetVersion.timestamp)).first()
+
+    new_version= str(int(float(dataset_version_query.tag_version)) + 1)
+
+    print(f"NEW VERSION {new_version}")
+
+    #Update tag to remote
+    # datasetHandler.updateTag(tag_version=new_version)
+
+    # #Update tag into db
+    # init_dataset_version= DatasetVersion(tag_version=new_version,
+    #                              timestamp=datetime.datetime.now().timestamp(),
+    #                              dataset_id=dataset_version_query.id)
+        
+    # db_instance.db.session.add(init_dataset_version)
+    # db_instance.db.session.commit()
+
+    # #Change current dataset version to keep track which dataset_version i'am using 
+
+    # dataset_query = Dataset.query.get(dataset_id)
+    
+    
+    # if dataset_query:
+    #     dataset_query.current_version= new_version
+    #     #Update selected database. This is used to keep track of which dataset i'am using to training.
+    #     #In theory i can have multiple dataset
+    #     dataset_query.select()
+    #     db_instance.db.session.commit()
+
+    return redirect(url_for('home.dataset_statistics',dataset_id=dataset_id))
+
+@home.route("/change_dataset_version/<int:dataset_id>/<tag_version>/")
+def change_dataset_version(dataset_id,tag_version):
+
+    print("CHANGE_DATASET_VERSION")
+    print(dataset_id)
+    print(tag_version)
+
+    return redirect(url_for('home.dataset_statistics',dataset_id=dataset_id))
 
 
 @home.route("/training", methods=['GET', 'POST'])

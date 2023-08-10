@@ -155,9 +155,14 @@ class Tag(Base):
 #HANDLE DATASET_VERSIONING
 class Dataset(db_instance.db.Model):
     __tablename__ = 'dataset'
+    """
+    :param current_version: Keep track of the version selected for training
 
+    """
     id = Column(Integer, primary_key=True)
     init= Column(Boolean,default=False)
+    is_selected = Column(Integer, nullable=False, server_default='0')
+    current_version = Column(String(10))
     repo_name= Column(String(40))
     local_path = Column(String(200))
     git_remote_path = Column(String(200))
@@ -169,6 +174,15 @@ class Dataset(db_instance.db.Model):
     dvc_remote_ssh_ip = Column(String(60))
     dvc_remote_path= Column(String(200))
     dataset_version = relationship('DatasetVersion', back_populates='dataset')
+
+    def select(self):
+        # Deselect all items
+        Dataset.query.update({Dataset.is_selected: 0})
+
+        # Select the current item
+        self.is_selected = 1
+        db_instance.session.commit()
+
 
 class DatasetVersion(db_instance.db.Model):
     __tablename__ = 'dataset_version'

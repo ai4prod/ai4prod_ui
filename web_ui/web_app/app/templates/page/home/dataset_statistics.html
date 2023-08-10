@@ -7,14 +7,15 @@
 
         <div class="row">
             <div class="col-6">
-                <h2>Version List </h2>
+                <h2>Versions List </h2>
 
                 <table class="table table-bordered table-striped">
 
                     <thead>
                         <tr>
-                            <th>Version</th>
-                            <th>Date</th>
+                            <th class="text-center">Version</th>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Change Version</th>
                            
                         </tr>
                     </thead>
@@ -22,19 +23,19 @@
 
                         {% for dataset_version in datasets_versions_list %}
                         <tr>
-                            <td>{{dataset_version.tag_version}}</td>
-                            <td>{{dataset_version.timestamp}}</td>
+                            <td class="text-center">{{dataset_version.tag_version}}</td>
+                            <td class="text-center" >{{dataset_version.timestamp}}</td>
+                            <td class="text-center"><a class="btn btn-primary" href="{{ url_for('home.change_dataset_version', dataset_id= dataset_version.dataset_id,tag_version=dataset_version.tag_version) }}">Cambia</a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
 
-            <div class="col-3">
-                <button class="btn btn-primary"> Add New Version</button>
-            </div>
+          
 
-            <div class="col-3">
+            <div class="col-6 text-center">
                 {% include "page/turbo_component/dataset_change.html" %}
             </div>
 
