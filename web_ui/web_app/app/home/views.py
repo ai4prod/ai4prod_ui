@@ -133,7 +133,7 @@ def dataset_statistics(dataset_id):
                                     create_repository=False)
     data_instance.current_dataset_id= dataset_id
 
-    return render_template("page/home/dataset_statistics.html", datasets_versions_list=dataset_version_query,dataset_id=dataset_id)
+    return render_template("page/home/dataset_statistics.html", datasets_versions_list=dataset_version_query,dataset_id=dataset_id,current_version=dataset_query.current_version)
 
 
 @home.route("/update_dataset_version/<int:dataset_id>/")
@@ -178,6 +178,15 @@ def change_dataset_version(dataset_id,tag_version):
     print("CHANGE_DATASET_VERSION")
     print(dataset_id)
     print(tag_version)
+
+    dataset_query = Dataset.query.get(dataset_id)
+
+    if dataset_query:
+        dataset_query.current_version= tag_version
+        #Update selected database. This is used to keep track of which dataset i'am using to training.
+        #In theory i can have multiple dataset
+        dataset_query.select()
+        db_instance.db.session.commit()
 
     return redirect(url_for('home.dataset_statistics',dataset_id=dataset_id))
 

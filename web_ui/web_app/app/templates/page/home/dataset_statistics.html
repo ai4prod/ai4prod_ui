@@ -22,12 +22,23 @@
                     <tbody>
 
                         {% for dataset_version in datasets_versions_list %}
+                        
+                        {% if current_version==dataset_version.tag_version %} 
+                        <tr class="table-success">
+                            <td class="text-center"> <b>{{dataset_version.tag_version}}</b></td>
+                            <td class="text-center" ><b>{{dataset_version.timestamp}}</b></td>
+                            <td class="text-center"> <b>Selezionata</b> </td>
+                        </tr>
+
+                        {% else %}
+
                         <tr>
                             <td class="text-center">{{dataset_version.tag_version}}</td>
                             <td class="text-center" >{{dataset_version.timestamp}}</td>
-                            <td class="text-center"><a class="btn btn-primary" href="{{ url_for('home.change_dataset_version', dataset_id= dataset_version.dataset_id,tag_version=dataset_version.tag_version) }}">Cambia</a>
+                            <td class="text-center"><a class="btn btn-primary" href="{{ url_for('home.change_dataset_version', dataset_id= dataset_id,tag_version=dataset_version.tag_version) }}">Cambia</a>
                             </td>
                         </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
