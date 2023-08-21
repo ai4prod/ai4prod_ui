@@ -1,7 +1,7 @@
 import config
 import yaml
 import os
-from app import create_app, create_db_path
+from app import create_app
 from app.conf.conf_handler import configurationHandler
 
 #DEFAULT CFG
@@ -42,7 +42,7 @@ root_exec = os.path.dirname(current_exec_path)
 
 configurationHandler.init(root_exec=root_exec)
 
-db_uri = create_db_path(configurationHandler.dict_conf, root_exec)
+db_uri = configurationHandler.create_db_path()
 
 application = create_app("config.DevelopmentConfig", db_uri)
 

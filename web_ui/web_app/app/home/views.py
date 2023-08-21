@@ -21,7 +21,7 @@ import datetime
 from app.data.dataset import DatasetHandler, datasetHandler
 import datetime
 from app.home import data_instance
-
+from app.conf.conf_handler import configurationHandler
 # Dove sono arrivato
 """
 Ho creato la pagina di visualizzazione delle statistiche in una tabella. Il primo problema è che le metriche visualizzate,
@@ -93,6 +93,23 @@ def dataset():
 
         db_instance.db.session.add(init_dataset_version)
         db_instance.db.session.commit()
+
+    #Update or Create configuration into DB
+
+    conf = Configuration.query.filter_by(id=1).first()
+    
+    if conf:
+        print("UPDATE CONF")
+        conf.base_path_experiment= configurationHandler.dict_conf["base_path_experiment"]
+        conf.task= configurationHandler.dict_conf["task"]
+    
+    else:
+        print("CREATE CONF")
+        conf= Configuration(base_path_experiment=configurationHandler.dict_conf["base_path_experiment"],
+                            task=configurationHandler.dict_conf["task"] )
+        db_instance.db.session.add(conf)    
+    
+    db_instance.db.session.commit()
 
     datasets_list = Dataset.query.all()
 

@@ -1,6 +1,7 @@
 import yaml
 import os
-from app import create_db_path
+from omegaconf import DictConfig, OmegaConf, open_dict
+from app.home.ai4prod_python.ml_utils.ml_utils import setup_path
 
 class ConfigurationHandler:
 
@@ -9,13 +10,14 @@ class ConfigurationHandler:
 
         self.dict_conf = {
             'db_name': 'general',
-            'base_path_experiment': 'C:/Users/erict/OneDrive\Desktop/Develop/experimentNew/',
+            'base_path_experiment': 'C:/Users/erict/OneDrive/Desktop/Develop/experimentNew/',
             'task': "classification",
             'dataset_path': 'C:/Users/',
             'dataset_versioning': False,
             'data_version_tag': '1',
             'data_version_name': 'Dataset.dvc',
         }
+        self.onf=None
 
     def init(self, root_exec):
         
@@ -51,6 +53,22 @@ class ConfigurationHandler:
         
         with open(self.conf_path, "r") as yaml_file:
             self.dict_conf = yaml.safe_load(yaml_file)
+
+    def create_db_path(self):
+        omgega_conf_path= self.root_exec + "/app/home/ai4prod_python/" +  self.dict_conf["task"]+ "/conf/"+  self.dict_conf["task"] +".yaml"
+        self.onf = OmegaConf.load(omgega_conf_path)
+        self.onf["base_path_experiment"]=  self.dict_conf["base_path_experiment"]
+        self.onf["db_name"]=  self.dict_conf["db_name"]
+        self.onf["task"]=  self.dict_conf["task"]
+        self.onf["general_cfg"]["dataset_path"]=  self.dict_conf["dataset_path"]
+        self.onf["general_cfg"]["dataset_versioning"]=  self.dict_conf["dataset_versioning"]
+        self.onf["general_cfg"]["data_version_tag"]=  self.dict_conf["data_version_tag"]
+        self.onf["general_cfg"]["data_version_name"]=  self.dict_conf["data_version_name"]
+
+
+        setup_path(omgega_conf_path,self.onf,False)
+
+        return self.onf["tracking_uri"] 
 
     
 configurationHandler = ConfigurationHandler()

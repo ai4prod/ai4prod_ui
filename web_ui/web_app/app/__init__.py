@@ -28,29 +28,6 @@ def get_root_dir_abs_path() -> str:
     # See also: https://pyinstaller.readthedocs.io/en/stable/runtime-information.html#using-file
     return getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
 
-def create_db_path(cfg,current_path):
-    
-    omgega_conf_path= current_path + "/app/home/ai4prod_python/" + cfg["task"]+ "/conf/"+ cfg["task"] +".yaml"
-
-    
-    onf = OmegaConf.load(omgega_conf_path)
-    onf["base_path_experiment"]= cfg["base_path_experiment"]
-    onf["db_name"]= cfg["db_name"]
-    onf["task"]= cfg["task"]
-    onf["general_cfg"]["dataset_path"]= cfg["dataset_path"]
-    onf["general_cfg"]["dataset_versioning"]= cfg["dataset_versioning"]
-    onf["general_cfg"]["data_version_tag"]= cfg["data_version_tag"]
-    onf["general_cfg"]["data_version_name"]= cfg["data_version_name"]
-
-
-
-    setup_path(omgega_conf_path,onf,False)
-
-    return onf["tracking_uri"]
-
-
-
-
 def create_app(config_object_name,db_uri) -> Flask:
     """
     :param config_object_name: The python path of the config object.
