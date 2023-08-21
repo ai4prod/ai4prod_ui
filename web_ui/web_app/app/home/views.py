@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, Response, make_response, session, current_app,redirect,url_for
+from flask import render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for
 import flask
 from . import home
 from pathlib import Path
@@ -14,7 +14,7 @@ import plotly
 import plotly.express as px
 import json
 
-from app.db.mlflow_shema import Param, Run, Metric, Dataset, DatasetVersion
+from app.db.mlflow_shema import Param, Run, Metric, Dataset, DatasetVersion, Configuration
 from app.db.database_instance import db_instance
 from sqlalchemy import desc
 import datetime
@@ -39,8 +39,6 @@ Per ogni nome di esperimento è creato un database apposito. In base al valore e
 Forse dovrei creare una lista di esperimenti e quando uno clicca l'esperimento si setta il training
 
 
-MANCA LA PARTE DI SELZIONE DEL DATASET
-I Teoria dovrebbe essere fatto dalla tabella nella pagina di dataset statistics
 """
 
 
@@ -60,16 +58,16 @@ def dataset():
         dvc_remote_path = request.form['dvc_remote_path']
 
         datasetHandler.setup(local_repo_path=local_path,
-                                        dvc_remote_path=dvc_remote_path,
-                                        bibucket_username=bitbucket_user,
-                                        bitbucket_password=bitbucket_password,
-                                        bitbucket_repository_name=repo_name,
-                                        bitbucket_workspace_name=bitbucket_workspace)
+                             dvc_remote_path=dvc_remote_path,
+                             bibucket_username=bitbucket_user,
+                             bitbucket_password=bitbucket_password,
+                             bitbucket_repository_name=repo_name,
+                             bitbucket_workspace_name=bitbucket_workspace)
 
         datasetHandler.initDataset()
         git_remote_path = datasetHandler.gitHandler.remote_repo_url
-        
-        tag_version="0"
+
+        tag_version = "0"
         new_dataset = Dataset(init=True,
                               current_version=tag_version,
                               repo_name=repo_name,
@@ -85,16 +83,14 @@ def dataset():
         db_instance.db.session.add(new_dataset)
         db_instance.db.session.commit()
 
-        
-       
         # new Dataset will inited always with version 0
         datasetHandler.updateTag(tag_version=tag_version)
-        #Init Dataset version into DB
+        # Init Dataset version into DB
 
-        init_dataset_version= DatasetVersion(tag_version=tag_version,
-                                 timestamp=datetime.datetime.now().timestamp(),
-                                 dataset_id=new_dataset.id)
-        
+        init_dataset_version = DatasetVersion(tag_version=tag_version,
+                                              timestamp=datetime.datetime.now().timestamp(),
+                                              dataset_id=new_dataset.id)
+
         db_instance.db.session.add(init_dataset_version)
         db_instance.db.session.commit()
 
@@ -106,9 +102,8 @@ def dataset():
 @home.route("/dataset_statistics/<int:dataset_id>", methods=['GET', 'POST'])
 def dataset_statistics(dataset_id):
 
-
     # retrive data for selected dataset
-    
+
     dataset_version_query = DatasetVersion.query.all()
 
     print(dataset_version_query)
@@ -122,76 +117,77 @@ def dataset_statistics(dataset_id):
         dataset_version.timestamp = formatted_date
         print(dataset_version.timestamp)
 
-
     dataset_query = Dataset.query.filter(Dataset.id == dataset_id).first()
     datasetHandler.setup(local_repo_path=dataset_query.local_path,
-                                    dvc_remote_path=dataset_query.dvc_remote_path,
-                                    bibucket_username=dataset_query.bitbucket_user,
-                                    bitbucket_password=dataset_query.bitbucket_password,
-                                    bitbucket_repository_name=dataset_query.repo_name,
-                                    bitbucket_workspace_name=dataset_query.bitbucket_workspace,
-                                    create_repository=False)
-    data_instance.current_dataset_id= dataset_id
+                         dvc_remote_path=dataset_query.dvc_remote_path,
+                         bibucket_username=dataset_query.bitbucket_user,
+                         bitbucket_password=dataset_query.bitbucket_password,
+                         bitbucket_repository_name=dataset_query.repo_name,
+                         bitbucket_workspace_name=dataset_query.bitbucket_workspace,
+                         create_repository=False)
+    data_instance.current_dataset_id = dataset_id
 
-    return render_template("page/home/dataset_statistics.html", datasets_versions_list=dataset_version_query,dataset_id=dataset_id,current_version=dataset_query.current_version)
+    return render_template("page/home/dataset_statistics.html", datasets_versions_list=dataset_version_query, dataset_id=dataset_id, current_version=dataset_query.current_version)
 
 
 @home.route("/update_dataset_version/<int:dataset_id>/")
 def update_dataset_version(dataset_id):
 
-    #datasetHandler is already initialized from dataset_statistics. 
-    # WARNING removing datasetHandler initialization from dataset_statistics 
-    # route will cause failure on this 
-    
-    dataset_version_query = DatasetVersion.query.order_by(desc(DatasetVersion.timestamp)).first()
+    # datasetHandler is already initialized from dataset_statistics.
+    # WARNING removing datasetHandler initialization from dataset_statistics
+    # route will cause failure on this
 
-    new_version= str(int(float(dataset_version_query.tag_version)) + 1)
+    dataset_version_query = DatasetVersion.query.order_by(
+        desc(DatasetVersion.timestamp)).first()
+
+    new_version = str(int(float(dataset_version_query.tag_version)) + 1)
 
     print(f"NEW VERSION {new_version}")
 
-    #Update tag to remote
+    # Update tag to remote
     datasetHandler.updateTag(tag_version=new_version)
 
     # #Update tag into db
-    init_dataset_version= DatasetVersion(tag_version=new_version,
-                                  timestamp=datetime.datetime.now().timestamp(),
-                                  dataset_id=dataset_version_query.id)
-        
+    init_dataset_version = DatasetVersion(tag_version=new_version,
+                                          timestamp=datetime.datetime.now().timestamp(),
+                                          dataset_id=dataset_version_query.id)
+
     db_instance.db.session.add(init_dataset_version)
     db_instance.db.session.commit()
 
-    #Change current dataset version in Dataset Table to keep track which dataset_version i'am using 
+    # Change current dataset version in Dataset Table to keep track which dataset_version i'am using
     dataset_query = Dataset.query.get(dataset_id)
 
     if dataset_query:
-        dataset_query.current_version= new_version
-        #Update selected database. This is used to keep track of which dataset i'am using to training.
-        #In theory i can have multiple dataset
+        dataset_query.current_version = new_version
+        # Update selected database. This is used to keep track of which dataset i'am using to training.
+        # In theory i can have multiple dataset
         dataset_query.select()
         db_instance.db.session.commit()
 
-    return redirect(url_for('home.dataset_statistics',dataset_id=dataset_id))
+    return redirect(url_for('home.dataset_statistics', dataset_id=dataset_id))
+
 
 @home.route("/change_dataset_version/<int:dataset_id>/<tag_version>/")
-def change_dataset_version(dataset_id,tag_version):
+def change_dataset_version(dataset_id, tag_version):
 
     print("CHANGE_DATASET_VERSION")
     print(dataset_id)
     print(tag_version)
 
-    #change dataset version from DVC
+    # change dataset version from DVC
     datasetHandler.change_dataset_version(tag_version)
-    
-    #change dataset version to db
+
+    # change dataset version to db
     dataset_query = Dataset.query.get(dataset_id)
     if dataset_query:
-        dataset_query.current_version= tag_version
-        #Update selected database. This is used to keep track of which dataset i'am using to training.
-        #In theory i can have multiple dataset
+        dataset_query.current_version = tag_version
+        # Update selected database. This is used to keep track of which dataset i'am using to training.
+        # In theory i can have multiple dataset
         dataset_query.select()
         db_instance.db.session.commit()
 
-    return redirect(url_for('home.dataset_statistics',dataset_id=dataset_id))
+    return redirect(url_for('home.dataset_statistics', dataset_id=dataset_id))
 
 
 @home.route("/training", methods=['GET', 'POST'])
@@ -287,6 +283,16 @@ def deploy():
     return render_template('page/home/deploy.html')
 
 
-@home.route('/configuration')
+@home.route('/configuration', methods=["GET", "POST"])
 def configuration():
+    if request.method == "POST":
+        task = request.form.get('task')
+        base_path_experiment = request.form['base_path_experiment']
+
+        conf = Configuration(base_path_experiment=base_path_experiment,
+                             task=task)
+        
+        db_instance.db.session.add(conf)
+        db_instance.db.session.commit()
+    
     return render_template('page/home/configuration.html')

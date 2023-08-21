@@ -35,8 +35,8 @@ def create_db_path(cfg,current_path):
     
     onf = OmegaConf.load(omgega_conf_path)
     onf["base_path_experiment"]= cfg["base_path_experiment"]
-    onf["experiment_name"] = cfg["experiment_name"]
-
+    onf["db_name"]= cfg["db_name"]
+    onf["task"]= cfg["task"]
     onf["general_cfg"]["dataset_path"]= cfg["dataset_path"]
     onf["general_cfg"]["dataset_versioning"]= cfg["dataset_versioning"]
     onf["general_cfg"]["data_version_tag"]= cfg["data_version_tag"]

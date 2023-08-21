@@ -192,4 +192,11 @@ class DatasetVersion(db_instance.db.Model):
     timestamp = Column(String(20))
     dataset_id = Column(Integer, ForeignKey('dataset.id'))
     dataset = relationship('Dataset', back_populates='dataset_version')
+
+
+class Configuration(db_instance.db.Model):
+    __tablename__ = 'configuration'
+    id = Column(Integer, primary_key=True)
+    base_path_experiment = Column(String(150))
+    task = Column(String(20))
     
