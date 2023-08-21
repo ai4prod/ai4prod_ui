@@ -181,7 +181,7 @@ class Dataset(db_instance.db.Model):
 
         # Select the current item
         self.is_selected = 1
-        db_instance.session.commit()
+        db_instance.db.session.commit()
 
 
 class DatasetVersion(db_instance.db.Model):

@@ -37,6 +37,10 @@ pagina
 Durante il training non ho nessun tipo di feedback
 Per ogni nome di esperimento è creato un database apposito. In base al valore experiment_name: testWindows nella gui_cfg.yaml
 Forse dovrei creare una lista di esperimenti e quando uno clicca l'esperimento si setta il training
+
+
+MANCA LA PARTE DI SELZIONE DEL DATASET
+I Teoria dovrebbe essere fatto dalla tabella nella pagina di dataset statistics
 """
 
 
@@ -135,13 +139,6 @@ def dataset_statistics(dataset_id):
 @home.route("/update_dataset_version/<int:dataset_id>/")
 def update_dataset_version(dataset_id):
 
-    print("CHANGE_DATASET_VERSION")
-    print(dataset_id)
-    
-    """
-    DEVO FINIRE QUESTA FUNZIONE. AGGIORNAMENTO VERSIONE DATASET NON E' COMPLETO
-    """
-
     #datasetHandler is already initialized from dataset_statistics. 
     # WARNING removing datasetHandler initialization from dataset_statistics 
     # route will cause failure on this 
@@ -153,27 +150,25 @@ def update_dataset_version(dataset_id):
     print(f"NEW VERSION {new_version}")
 
     #Update tag to remote
-    # datasetHandler.updateTag(tag_version=new_version)
+    datasetHandler.updateTag(tag_version=new_version)
 
     # #Update tag into db
-    # init_dataset_version= DatasetVersion(tag_version=new_version,
-    #                              timestamp=datetime.datetime.now().timestamp(),
-    #                              dataset_id=dataset_version_query.id)
+    init_dataset_version= DatasetVersion(tag_version=new_version,
+                                  timestamp=datetime.datetime.now().timestamp(),
+                                  dataset_id=dataset_version_query.id)
         
-    # db_instance.db.session.add(init_dataset_version)
-    # db_instance.db.session.commit()
+    db_instance.db.session.add(init_dataset_version)
+    db_instance.db.session.commit()
 
-    # #Change current dataset version to keep track which dataset_version i'am using 
+    #Change current dataset version in Dataset Table to keep track which dataset_version i'am using 
+    dataset_query = Dataset.query.get(dataset_id)
 
-    # dataset_query = Dataset.query.get(dataset_id)
-    
-    
-    # if dataset_query:
-    #     dataset_query.current_version= new_version
-    #     #Update selected database. This is used to keep track of which dataset i'am using to training.
-    #     #In theory i can have multiple dataset
-    #     dataset_query.select()
-    #     db_instance.db.session.commit()
+    if dataset_query:
+        dataset_query.current_version= new_version
+        #Update selected database. This is used to keep track of which dataset i'am using to training.
+        #In theory i can have multiple dataset
+        dataset_query.select()
+        db_instance.db.session.commit()
 
     return redirect(url_for('home.dataset_statistics',dataset_id=dataset_id))
 

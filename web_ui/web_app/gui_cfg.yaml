@@ -1,0 +1,7 @@
+base_path_experiment: C:/Users/erict/OneDrive/Desktop/Develop/Experiment/classificaton_gui/
+data_version_name: Dataset.dvc
+data_version_tag: v4
+dataset_path: C:/Users/erict/OneDrive/Desktop/Develop/Dataset/DVintel/Data/Dataset/
+dataset_versioning: false
+experiment_name: testWindows
+task: classification
