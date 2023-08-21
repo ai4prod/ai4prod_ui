@@ -179,8 +179,11 @@ def change_dataset_version(dataset_id,tag_version):
     print(dataset_id)
     print(tag_version)
 
+    #change dataset version from DVC
+    datasetHandler.change_dataset_version(tag_version)
+    
+    #change dataset version to db
     dataset_query = Dataset.query.get(dataset_id)
-
     if dataset_query:
         dataset_query.current_version= tag_version
         #Update selected database. This is used to keep track of which dataset i'am using to training.

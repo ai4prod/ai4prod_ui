@@ -64,19 +64,19 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>Local Path</th>
-                        <th>Remote Path</th>
-                        <th>Current Version</th>
-                        <th>Add New Version</th>
+                        <th class="text-center">Local Path</th>
+                        <th class="text-center">Remote Path</th>
+                        <th class="text-center">Current Version</th>
+                        <th class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for dataset in datasets_list %}
                     <tr>
-                        <td onclick="expandCell(this)" class="truncate-custom">{{ dataset.local_path }}</td>
-                        <td onclick="expandCell(this)" class="truncate-custom">{{ dataset.git_remote_path }}</td>
-                        <td onclick="expandCell(this)" class="truncate-custom">Current Version</td>
-                        <td onclick="expandCell(this)" class="truncate-custom"><a href="{{ url_for('home.dataset_statistics', dataset_id=dataset.id) }}">Stats</a></td>
+                        <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.local_path }}</td>
+                        <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.git_remote_path }}</td>
+                        <td onclick="expandCell(this)" class="text-center truncate-custom">{{dataset.current_version}}</td>
+                        <td onclick="expandCell(this)" class="text-center truncate-custom"><a class="btn btn-success" href="{{ url_for('home.dataset_statistics', dataset_id=dataset.id) }}">Go</a></td>
                     </tr>
                     {% endfor %}
                     

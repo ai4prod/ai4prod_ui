@@ -157,6 +157,19 @@ class GitHandler():
         tag = self.local_repo.create_tag(
             tag_version, message=message)
         print(tag)
+    
+    def change_to_tag(self,tag_version):
+
+        """
+        Change git reposiotry to specific tag
+
+        """
+
+        # Fetch all tags from the remote repository
+        self.local_repo.remotes.origin.fetch(tags=True)
+
+        # Checkout the specified tag version
+        self.local_repo.git.checkout(tag_version)
 
 
 class DvcHandler():
@@ -251,6 +264,17 @@ class DvcHandler():
 
         return True if ("changed" in result[0] or "modified" in result[0]) else False 
 
+    def pull_version(self):
+
+        """
+        Used to change dataset version locally using tag
+        
+        """
+        pull_version = [
+            ['dvc', 'pull'],
+        ]
+
+        result=self.execute_pipeline_commands(pull_version)
 
 
 class DatasetHandler():
@@ -402,6 +426,19 @@ class DatasetHandler():
         self.gitHandler.push_to_remote()
         self.gitHandler.push_tag_to_remote(tag_version)
         self.dvcHandler.push_to_remote()
+    
+    def change_dataset_version(self, 
+                               tag_version:str):
+
+        """
+        :param tag_verison: version of dataset to retrieve 
+        This function will retrieve a dataset with a specific tag_version
+        """
+        
+        self.gitHandler.change_to_tag(tag_version)
+        self.dvcHandler.pull_version()
+
+        
 
 
 datasetHandler= DatasetHandler()
