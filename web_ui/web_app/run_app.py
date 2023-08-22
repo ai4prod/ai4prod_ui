@@ -56,4 +56,4 @@ https://stackoverflow.com/a/63892938
 """
 if __name__ == "__main__":
 
-    application.run(host="127.0.0.1", port=4040, debug=True)
+    application.run(host="127.0.0.1", port=4040)

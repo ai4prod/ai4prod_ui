@@ -68,45 +68,45 @@ def dataset():
                                               dataset_version_tag=tag_version,
                                               experiment_name=repo_name)
         
-        # #-----
-        # # REPOSITORY SETUP
-        # #-----
-        # datasetHandler.setup(local_repo_path=local_path,
-        #                      dvc_remote_path=dvc_remote_path,
-        #                      bibucket_username=bitbucket_user,
-        #                      bitbucket_password=bitbucket_password,
-        #                      bitbucket_repository_name=repo_name,
-        #                      bitbucket_workspace_name=bitbucket_workspace)
+        #-----
+        # REPOSITORY SETUP
+        #-----
+        datasetHandler.setup(local_repo_path=local_path,
+                             dvc_remote_path=dvc_remote_path,
+                             bibucket_username=bitbucket_user,
+                             bitbucket_password=bitbucket_password,
+                             bitbucket_repository_name=repo_name,
+                             bitbucket_workspace_name=bitbucket_workspace)
 
-        # datasetHandler.initDataset()
-        # git_remote_path = datasetHandler.gitHandler.remote_repo_url
+        datasetHandler.initDataset()
+        git_remote_path = datasetHandler.gitHandler.remote_repo_url
 
        
-        # new_dataset = Dataset(init=True,
-        #                       current_version=tag_version,
-        #                       repo_name=repo_name,
-        #                       local_path=local_path,
-        #                       git_remote_path=git_remote_path,
-        #                       bitbucket_user=bitbucket_user,
-        #                       bitbucket_password=bitbucket_password,
-        #                       bitbucket_workspace=bitbucket_workspace,
-        #                       dvc_remote_ssh_user=dvc_remote_ssh_user,
-        #                       dvc_remote_ssh_psw=dvc_remote_ssh_psw,
-        #                       dvc_remote_ssh_ip=dvc_remote_ssh_ip,
-        #                       dvc_remote_path=dvc_remote_path)
-        # db_instance.db.session.add(new_dataset)
-        # db_instance.db.session.commit()
+        new_dataset = Dataset(init=True,
+                              current_version=tag_version,
+                              repo_name=repo_name,
+                              local_path=local_path,
+                              git_remote_path=git_remote_path,
+                              bitbucket_user=bitbucket_user,
+                              bitbucket_password=bitbucket_password,
+                              bitbucket_workspace=bitbucket_workspace,
+                              dvc_remote_ssh_user=dvc_remote_ssh_user,
+                              dvc_remote_ssh_psw=dvc_remote_ssh_psw,
+                              dvc_remote_ssh_ip=dvc_remote_ssh_ip,
+                              dvc_remote_path=dvc_remote_path)
+        db_instance.db.session.add(new_dataset)
+        db_instance.db.session.commit()
 
-        # # new Dataset will inited always with version 0
-        # datasetHandler.updateTag(tag_version=tag_version)
-        # # Init Dataset version into DB
+        # new Dataset will inited always with version 0
+        datasetHandler.updateTag(tag_version=tag_version)
+        # Init Dataset version into DB
 
-        # init_dataset_version = DatasetVersion(tag_version=tag_version,
-        #                                       timestamp=datetime.datetime.now().timestamp(),
-        #                                       dataset_id=new_dataset.id)
+        init_dataset_version = DatasetVersion(tag_version=tag_version,
+                                              timestamp=datetime.datetime.now().timestamp(),
+                                              dataset_id=new_dataset.id)
 
-        # db_instance.db.session.add(init_dataset_version)
-        # db_instance.db.session.commit()
+        db_instance.db.session.add(init_dataset_version)
+        db_instance.db.session.commit()
         
         return redirect(url_for('home.dataset', datasets_list=datasets_list))
         
