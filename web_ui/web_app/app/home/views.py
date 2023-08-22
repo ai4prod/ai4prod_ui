@@ -45,57 +45,7 @@ Forse dovrei creare una lista di esperimenti e quando uno clicca l'esperimento s
 @home.route("/", methods=["GET", "POST"])
 def dataset():
     global datasetHandler
-
-    if request.method == 'POST':
-        local_path = request.form['local_path']
-        repo_name = request.form['repo_name']
-        bitbucket_user = request.form['bitbucket_user']
-        bitbucket_password = request.form['bitbucket_password']
-        bitbucket_workspace = request.form['bitbucket_workspace']
-        dvc_remote_ssh_user = request.form['dvc_remote_ssh_user']
-        dvc_remote_ssh_psw = request.form['dvc_remote_ssh_psw']
-        dvc_remote_ssh_ip = request.form['dvc_remote_ssh_ip']
-        dvc_remote_path = request.form['dvc_remote_path']
-
-        datasetHandler.setup(local_repo_path=local_path,
-                             dvc_remote_path=dvc_remote_path,
-                             bibucket_username=bitbucket_user,
-                             bitbucket_password=bitbucket_password,
-                             bitbucket_repository_name=repo_name,
-                             bitbucket_workspace_name=bitbucket_workspace)
-
-        datasetHandler.initDataset()
-        git_remote_path = datasetHandler.gitHandler.remote_repo_url
-
-        tag_version = "0"
-        new_dataset = Dataset(init=True,
-                              current_version=tag_version,
-                              repo_name=repo_name,
-                              local_path=local_path,
-                              git_remote_path=git_remote_path,
-                              bitbucket_user=bitbucket_user,
-                              bitbucket_password=bitbucket_password,
-                              bitbucket_workspace=bitbucket_workspace,
-                              dvc_remote_ssh_user=dvc_remote_ssh_user,
-                              dvc_remote_ssh_psw=dvc_remote_ssh_psw,
-                              dvc_remote_ssh_ip=dvc_remote_ssh_ip,
-                              dvc_remote_path=dvc_remote_path)
-        db_instance.db.session.add(new_dataset)
-        db_instance.db.session.commit()
-
-        # new Dataset will inited always with version 0
-        datasetHandler.updateTag(tag_version=tag_version)
-        # Init Dataset version into DB
-
-        init_dataset_version = DatasetVersion(tag_version=tag_version,
-                                              timestamp=datetime.datetime.now().timestamp(),
-                                              dataset_id=new_dataset.id)
-
-        db_instance.db.session.add(init_dataset_version)
-        db_instance.db.session.commit()
-
-    #Update or Create configuration into DB
-
+    
     conf = Configuration.query.filter_by(id=1).first()
     
     if conf:
@@ -112,6 +62,68 @@ def dataset():
     db_instance.db.session.commit()
 
     datasets_list = Dataset.query.all()
+
+    if request.method == 'POST':
+        local_path = request.form['local_path']
+        repo_name = request.form['repo_name']
+        bitbucket_user = request.form['bitbucket_user']
+        bitbucket_password = request.form['bitbucket_password']
+        bitbucket_workspace = request.form['bitbucket_workspace']
+        dvc_remote_ssh_user = request.form['dvc_remote_ssh_user']
+        dvc_remote_ssh_psw = request.form['dvc_remote_ssh_psw']
+        dvc_remote_ssh_ip = request.form['dvc_remote_ssh_ip']
+        dvc_remote_path = request.form['dvc_remote_path']
+
+        tag_version = "0"
+        
+        configurationHandler.save_dataset_cfg(dataset_path=local_path,
+                                              dataset_version_tag=tag_version)
+        
+        
+        # datasetHandler.setup(local_repo_path=local_path,
+        #                      dvc_remote_path=dvc_remote_path,
+        #                      bibucket_username=bitbucket_user,
+        #                      bitbucket_password=bitbucket_password,
+        #                      bitbucket_repository_name=repo_name,
+        #                      bitbucket_workspace_name=bitbucket_workspace)
+
+        # datasetHandler.initDataset()
+        # git_remote_path = datasetHandler.gitHandler.remote_repo_url
+
+       
+        # new_dataset = Dataset(init=True,
+        #                       current_version=tag_version,
+        #                       repo_name=repo_name,
+        #                       local_path=local_path,
+        #                       git_remote_path=git_remote_path,
+        #                       bitbucket_user=bitbucket_user,
+        #                       bitbucket_password=bitbucket_password,
+        #                       bitbucket_workspace=bitbucket_workspace,
+        #                       dvc_remote_ssh_user=dvc_remote_ssh_user,
+        #                       dvc_remote_ssh_psw=dvc_remote_ssh_psw,
+        #                       dvc_remote_ssh_ip=dvc_remote_ssh_ip,
+        #                       dvc_remote_path=dvc_remote_path)
+        # db_instance.db.session.add(new_dataset)
+        # db_instance.db.session.commit()
+
+        # # new Dataset will inited always with version 0
+        # datasetHandler.updateTag(tag_version=tag_version)
+        # # Init Dataset version into DB
+
+        # init_dataset_version = DatasetVersion(tag_version=tag_version,
+        #                                       timestamp=datetime.datetime.now().timestamp(),
+        #                                       dataset_id=new_dataset.id)
+
+        # db_instance.db.session.add(init_dataset_version)
+        # db_instance.db.session.commit()
+        
+        return redirect(url_for('home.dataset', datasets_list=datasets_list))
+        
+        
+
+    #Update or Create configuration into DB
+
+   
 
     return render_template("page/home/dataset.html", datasets_list=datasets_list)
 
