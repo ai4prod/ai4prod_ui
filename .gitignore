@@ -3,5 +3,5 @@ web_ui/web_app/app/__pycache__/*
 web_ui/web_app/app/data/__pycache__/*
 web_ui/web_app/app/db/__pycache__/*
 web_ui/web_app/app/home/__pycache__/*
-web_ui/web_app/app/home/turbo_wrapper/*
+web_ui/web_app/app/home/turbo_wrapper/__pycache__/*
 web_ui/web_app/app/conf/__pycache__/*
