@@ -77,11 +77,25 @@ class ConfigurationHandler:
     def save_dataset_cfg(self,
                          dataset_path: str,
                          dataset_version_tag: str,
+                         dataset_id:str,
                          experiment_name: str,
                          dataset_versioning=True,
                          ):
+        """Save dataset configuration to task/conf/task.yaml and to
+        gui_cfg.yaml
 
+        Args:
+            dataset_path (str): Path to a dataset. Needs to be a git repository
+            dataset_version_tag (str): DatasetVersion tag to use. Correspond to a git tag
+            dataset_id (str): id of the dataset saved a database. This is used to track with MLFlow
+            stats with a corresponding dataset
+            experiment_name (str): name of the experiment. All models are saved in this folders. Name correpond to
+            repository path last part for example /home/test/data_name. data_name is the experimet_name
+            dataset_versioning (bool, optional): If true dataset versioning is used during training otherwise is disabled.
+            
+        """
         dataset_values = {"dataset_path": dataset_path,
+                          "dataset_id": dataset_id,
                           "data_version_tag": dataset_version_tag,
                           "dataset_versioning": dataset_versioning}
 
@@ -92,7 +106,8 @@ class ConfigurationHandler:
                          omega_dict_values=omega_dict_values)
 
     def update_dataset_version(self,
-                               dataset_version_tag: str):
+                               dataset_version_tag: str,
+                               dataset_id:str):
         """
         Used to update cfg dataset version
 
@@ -102,6 +117,7 @@ class ConfigurationHandler:
 
         dataset_values = {
             "data_version_tag": dataset_version_tag,
+            "dataset_id": dataset_id
         }
         
         omega_dict_values = {"general_cfg": dataset_values,

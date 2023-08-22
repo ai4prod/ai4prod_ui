@@ -63,10 +63,7 @@ def dataset():
 
         tag_version = "0"
         
-        #save Cfg to .yaml file
-        configurationHandler.save_dataset_cfg(dataset_path=local_path,
-                                              dataset_version_tag=tag_version,
-                                              experiment_name=repo_name)
+        
         
         #-----
         # REPOSITORY SETUP
@@ -96,6 +93,12 @@ def dataset():
                               dvc_remote_path=dvc_remote_path)
         db_instance.db.session.add(new_dataset)
         db_instance.db.session.commit()
+        
+        #save Cfg to .yaml file
+        configurationHandler.save_dataset_cfg(dataset_path=local_path,
+                                              dataset_id=new_dataset.id,
+                                              dataset_version_tag=tag_version,
+                                              experiment_name=repo_name)
 
         # new Dataset will inited always with version 0
         datasetHandler.updateTag(tag_version=tag_version)
@@ -178,7 +181,7 @@ def update_dataset_version(dataset_id):
     datasetHandler.updateTag(tag_version=new_version)
     
     #Change Configuration value in .yaml file
-    configurationHandler.update_dataset_version(new_version)
+    configurationHandler.update_dataset_version(new_version,dataset_id=dataset_id)
 
     
     # #Update tag into db
@@ -212,7 +215,8 @@ def change_dataset_version(dataset_id, tag_version):
     # change dataset version from DVC
     datasetHandler.change_dataset_version(tag_version)
     
-    configurationHandler.update_dataset_version(tag_version)
+    configurationHandler.update_dataset_version(tag_version,
+                                                dataset_id=dataset_id)
 
     # change dataset version to db
     dataset_query = Dataset.query.get(dataset_id)
@@ -226,13 +230,21 @@ def change_dataset_version(dataset_id, tag_version):
     return redirect(url_for('home.dataset_statistics', dataset_id=dataset_id))
 
 
+
+@home.route("/start_training", methods=['GET', 'POST'])
+def start_training():
+    
+    my_thread = threading.Thread(target=train_with_hydra)
+    my_thread.start()
+    result="Training Started"
+    return jsonify({"result": result})
+
 @home.route("/training", methods=['GET', 'POST'])
 def training():
 
     if request.method == 'POST':
-
-        my_thread = threading.Thread(target=train_with_hydra)
-        my_thread.start()
+        pass
+        
         # uploaded_file = request.files['file']
 
         # print(uploaded_file)
@@ -253,7 +265,12 @@ def training():
     # df= px.data.medals_wide()
     # fig1= px.bar(df,x="nation",y=["gold","silver","bronze"],title="Wide=FromInput")
     # graphJson=json.dumps(fig1,cls= plotly.utils.PlotlyJSONEncoder)
-    return render_template("page/home/training.html")
+    
+    #Retrieve dataset statistics
+    
+    dataset_conf = Dataset.query.filter(Dataset.is_selected==1).all()
+    
+    return render_template("page/home/training.html",dataset_conf=dataset_conf)
 
 
 @home.route("/training_metrics")
