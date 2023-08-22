@@ -38,7 +38,7 @@ class ConfigurationHandler:
             self.dict_conf["task"] + ".yaml"
 
     def save_conf_file(self):
-        
+
         with open(self.conf_path, 'w') as yaml_file:
             yaml.dump(self.dict_conf, yaml_file, default_flow_style=False)
             print(
@@ -77,7 +77,7 @@ class ConfigurationHandler:
     def save_dataset_cfg(self,
                          dataset_path: str,
                          dataset_version_tag: str,
-                         experiment_name:str,
+                         experiment_name: str,
                          dataset_versioning=True,
                          ):
 
@@ -85,21 +85,41 @@ class ConfigurationHandler:
                           "data_version_tag": dataset_version_tag,
                           "dataset_versioning": dataset_versioning}
 
-        omega_dict_values= {"general_cfg":dataset_values,
-                            "experiment_name":experiment_name}
-        
+        omega_dict_values = {"general_cfg": dataset_values,
+                             "experiment_name": experiment_name}
+
         self.update_conf(dict_values=dataset_values,
                          omega_dict_values=omega_dict_values)
+
+    def update_dataset_version(self,
+                               dataset_version_tag: str):
+        """
+        Used to update cfg dataset version
+
+        Args:
+            dataset_version_tag (str): version of dataset
+        """
+
+        dataset_values = {
+            "data_version_tag": dataset_version_tag,
+        }
+        
+        omega_dict_values = {"general_cfg": dataset_values,
+                             }
+
+        self.update_conf(dict_values=dataset_values,
+                         omega_dict_values=omega_dict_values)
+        
 
     def save_only_omega_conf(self):
         """
         Save Omega conf self.onf into self.omge_conf_path
-        
+
         """
         with open(self.omega_conf_path, "w") as f:
-            OmegaConf.save(self.onf,f)
-        
-    def update_only_omege_conf(self,omega_dict_values:dict):
+            OmegaConf.save(self.onf, f)
+
+    def update_only_omege_conf(self, omega_dict_values: dict):
         """
 
         Args:
@@ -107,9 +127,8 @@ class ConfigurationHandler:
         """
 
         self.onf = OmegaConf.merge(self.onf, omega_dict_values)
-        
-        
-    def update_conf(self, dict_values: dict,omega_dict_values=None):
+
+    def update_conf(self, dict_values: dict, omega_dict_values=None):
         """
         args:
             :param dict_values: contains a dictionary with all value to be updated 
@@ -117,7 +136,7 @@ class ConfigurationHandler:
             :param omega_dict_values if not None means that omega Conf value has a different
             dict respect to dict_values. Usually dict values are used to update gui_cfg.yaml
             while omega_dit_values are used to update task value for training.
-        
+
         This method will update local config and task config based on 
         dataset_version, path and
         """
@@ -125,17 +144,16 @@ class ConfigurationHandler:
         self.dict_conf = {
             key: dict_values[key] if key in dict_values else value for key, value in self.dict_conf.items()}
         self.save_conf_file()
-        
+
         print(f"DICT CONF {self.dict_conf}")
-        
-        
+
         # Update OmegaConf Value
         if(omega_dict_values is None):
-            
+
             omega_dict = OmegaConf.create(dict_values)
         else:
-            omega_dict= OmegaConf.create(omega_dict_values)
-        
+            omega_dict = OmegaConf.create(omega_dict_values)
+
         self.update_only_omege_conf(omega_dict)
 
         print(f"OMEGA SAVE PATH {self.onf['general_cfg']['dataset_path']}")

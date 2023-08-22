@@ -176,7 +176,11 @@ def update_dataset_version(dataset_id):
 
     # Update tag to remote
     datasetHandler.updateTag(tag_version=new_version)
+    
+    #Change Configuration value in .yaml file
+    configurationHandler.update_dataset_version(new_version)
 
+    
     # #Update tag into db
     init_dataset_version = DatasetVersion(tag_version=new_version,
                                           timestamp=datetime.datetime.now().timestamp(),
@@ -207,6 +211,8 @@ def change_dataset_version(dataset_id, tag_version):
 
     # change dataset version from DVC
     datasetHandler.change_dataset_version(tag_version)
+    
+    configurationHandler.update_dataset_version(tag_version)
 
     # change dataset version to db
     dataset_query = Dataset.query.get(dataset_id)
