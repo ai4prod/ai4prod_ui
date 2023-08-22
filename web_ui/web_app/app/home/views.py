@@ -48,19 +48,6 @@ def dataset():
     
     conf = Configuration.query.filter_by(id=1).first()
     
-    if conf:
-        print("UPDATE CONF")
-        conf.base_path_experiment= configurationHandler.dict_conf["base_path_experiment"]
-        conf.task= configurationHandler.dict_conf["task"]
-    
-    else:
-        print("CREATE CONF")
-        conf= Configuration(base_path_experiment=configurationHandler.dict_conf["base_path_experiment"],
-                            task=configurationHandler.dict_conf["task"] )
-        db_instance.db.session.add(conf)    
-    
-    db_instance.db.session.commit()
-
     datasets_list = Dataset.query.all()
 
     if request.method == 'POST':
@@ -76,10 +63,14 @@ def dataset():
 
         tag_version = "0"
         
+        #save Cfg to .yaml file
         configurationHandler.save_dataset_cfg(dataset_path=local_path,
-                                              dataset_version_tag=tag_version)
+                                              dataset_version_tag=tag_version,
+                                              experiment_name=repo_name)
         
-        
+        # #-----
+        # # REPOSITORY SETUP
+        # #-----
         # datasetHandler.setup(local_repo_path=local_path,
         #                      dvc_remote_path=dvc_remote_path,
         #                      bibucket_username=bitbucket_user,
@@ -123,7 +114,17 @@ def dataset():
 
     #Update or Create configuration into DB
 
-   
+    if conf:
+        print("UPDATE CONF")
+        conf.base_path_experiment= configurationHandler.dict_conf["base_path_experiment"]
+        conf.task= configurationHandler.dict_conf["task"]
+    else:
+        print("CREATE CONF")
+        conf= Configuration(base_path_experiment=configurationHandler.dict_conf["base_path_experiment"],
+                            task=configurationHandler.dict_conf["task"] )
+        db_instance.db.session.add(conf)    
+    
+    db_instance.db.session.commit()
 
     return render_template("page/home/dataset.html", datasets_list=datasets_list)
 

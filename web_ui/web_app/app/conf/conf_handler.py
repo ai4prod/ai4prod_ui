@@ -77,17 +77,38 @@ class ConfigurationHandler:
     def save_dataset_cfg(self,
                          dataset_path: str,
                          dataset_version_tag: str,
-                         dataset_versioning=True):
+                         experiment_name:str,
+                         dataset_versioning=True,
+                         ):
 
         dataset_values = {"dataset_path": dataset_path,
                           "data_version_tag": dataset_version_tag,
                           "dataset_versioning": dataset_versioning}
 
-        omega_dict_values= {"general_cfg":dataset_values}
+        omega_dict_values= {"general_cfg":dataset_values,
+                            "experiment_name":experiment_name}
         
         self.update_conf(dict_values=dataset_values,
                          omega_dict_values=omega_dict_values)
 
+    def save_only_omega_conf(self):
+        """
+        Save Omega conf self.onf into self.omge_conf_path
+        
+        """
+        with open(self.omega_conf_path, "w") as f:
+            OmegaConf.save(self.onf,f)
+        
+    def update_only_omege_conf(self,omega_dict_values:dict):
+        """
+
+        Args:
+            omega_dict_values (dict): python dict values to change into omegaconf
+        """
+
+        self.onf = OmegaConf.merge(self.onf, omega_dict_values)
+        
+        
     def update_conf(self, dict_values: dict,omega_dict_values=None):
         """
         args:
@@ -114,12 +135,12 @@ class ConfigurationHandler:
             omega_dict = OmegaConf.create(dict_values)
         else:
             omega_dict= OmegaConf.create(omega_dict_values)
-        self.onf = OmegaConf.merge(self.onf, omega_dict)
+        
+        self.update_only_omege_conf(omega_dict)
 
         print(f"OMEGA SAVE PATH {self.onf['general_cfg']['dataset_path']}")
         print(f"OMEGA SAVE PATH {self.omega_conf_path}")
-        with open(self.omega_conf_path, "w") as f:
-            OmegaConf.save(self.onf,f)
+        self.save_only_omega_conf()
 
 
 configurationHandler = ConfigurationHandler()
