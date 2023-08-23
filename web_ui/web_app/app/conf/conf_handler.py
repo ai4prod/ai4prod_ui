@@ -20,6 +20,7 @@ class ConfigurationHandler:
         }
         self.onf = None
         self.omega_conf_path = None
+        self.experiment_folder=None
 
     def init(self, root_exec):
 
@@ -135,12 +136,12 @@ class ConfigurationHandler:
         
         """
         
-        dirfolder = self.onf["base_path_experiment"] + self.onf["experiment_name"] + "/"
-        print(dirfolder)
+        self.experiment_folder = self.onf["base_path_experiment"] + self.onf["experiment_name"] + "/"
+        print(self.experiment_folder)
         
-        if (os.path.isdir(dirfolder)):
+        if (os.path.isdir(self.experiment_folder)):
 
-            list_dir = os.listdir(dirfolder)
+            list_dir = os.listdir(self.experiment_folder)
             self.onf["experiment_number"] = len(list_dir)
         else:
             self.onf["experiment_number"] = 0
