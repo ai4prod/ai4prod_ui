@@ -328,7 +328,7 @@ def training_metrics(dataset_id):
         if(tmp_dict["dataset_id"]==str(dataset_id)):
             # TODO: some keys are task specific like val_accuracy is only for classification
             # Need to change based on different task
-            keys_to_move = ['experiment_number', 'dataset_version',"dataset_path","val_accuracy","val_cross_entropy"]
+            keys_to_move = ['experiment_number', 'dataset_version',"dataset_path","val_accuracy","val_cross_entropy","dataset_id"]
             tmp_dict = move_specific_keys_to_first(tmp_dict,keys_to_move)
             print(tmp_dict)   
             list_experiments_dict.append(tmp_dict)
@@ -342,10 +342,18 @@ def optimization():
     return render_template('page/home/optimization.html')
 
 
-@home.route('/deploy/<int:experiment_number>')
-def deploy(experiment_number):
+@home.route('/deploy/<int:experiment_number>/<int:dataset_id>')
+def deploy(experiment_number,dataset_id):
+    
     
     print(experiment_number)
+    
+    configuration = db_instance.db.session.query(Configuration).first()
+    dataset= db_instance.db.session.query(Dataset).filter(Dataset.id==dataset_id).first()
+    
+    print(configuration.base_path_experiment)
+    print(configuration.task)
+    print(dataset.repo_name)
     
     return render_template('page/home/deploy.html')
 

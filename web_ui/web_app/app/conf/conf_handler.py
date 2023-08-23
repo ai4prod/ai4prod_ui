@@ -19,8 +19,10 @@ class ConfigurationHandler:
             'data_version_name': 'Dataset.dvc',
         }
         self.onf = None
+        self.onf_onnx = None
         self.omega_conf_path = None
         self.experiment_folder=None
+        self.omega_conf_onnx_path = None
 
     def init(self, root_exec):
 
@@ -37,6 +39,13 @@ class ConfigurationHandler:
         self.omega_conf_path = self.root_exec + "\\app\\home\\ai4prod_python\\" + \
             self.dict_conf["task"] + "\\conf\\" + \
             self.dict_conf["task"] + ".yaml"
+        
+        self.omega_conf_onnx_path = self.root_exec + "\\app\\home\\ai4prod_python\\" + \
+            self.dict_conf["task"] + "\\conf\\onnx\\standard.yaml"
+            
+        self.onf = OmegaConf.load(self.omega_conf_path)
+        self.onf_onnx = OmegaConf.load(self.omega_conf_onnx_path)
+
 
     def save_conf_file(self):
 
@@ -62,7 +71,7 @@ class ConfigurationHandler:
             self.dict_conf = yaml.safe_load(yaml_file)
 
     def create_db_path(self):
-        self.onf = OmegaConf.load(self.omega_conf_path)
+        
         self.onf["base_path_experiment"] = self.dict_conf["base_path_experiment"]
         self.onf["db_name"] = self.dict_conf["db_name"]
         self.onf["task"] = self.dict_conf["task"]
@@ -146,24 +155,29 @@ class ConfigurationHandler:
         else:
             self.onf["experiment_number"] = 0
             
-        self.save_only_omega_conf()
+        self.save_only_omega_conf(self.onf,self.omega_conf_path)
         
-    def save_only_omega_conf(self):
+    def save_only_omega_conf(self,
+                             conf:OmegaConf,
+                             conf_path:str,
+                             ):
         """
         Save Omega conf self.onf into self.omge_conf_path
 
         """
-        with open(self.omega_conf_path, "w") as f:
-            OmegaConf.save(self.onf, f)
+        with open(conf_path, "w") as f:
+            OmegaConf.save(conf, f)
 
-    def update_only_omege_conf(self, omega_dict_values: dict):
+    def update_only_omega_conf(self, 
+                               omega_dict_values: DictConfig,
+                               conf:OmegaConf):
         """
 
         Args:
             omega_dict_values (dict): python dict values to change into omegaconf
         """
 
-        self.onf = OmegaConf.merge(self.onf, omega_dict_values)
+        return OmegaConf.merge(conf, omega_dict_values)
 
     def update_conf(self, dict_values: dict, omega_dict_values=None):
         """
@@ -191,11 +205,39 @@ class ConfigurationHandler:
         else:
             omega_dict = OmegaConf.create(omega_dict_values)
 
-        self.update_only_omege_conf(omega_dict)
+        self.onf = self.update_only_omega_conf(omega_dict,self.onf)
 
         print(f"OMEGA SAVE PATH {self.onf['general_cfg']['dataset_path']}")
         print(f"OMEGA SAVE PATH {self.omega_conf_path}")
-        self.save_only_omega_conf()
+        self.save_only_omega_conf(self.onf,self.omega_conf_path)
+        
+        
+    #ONNX CONFIGURATION
+    
+    
+    def update_onnx_converstion(self,model_path:str):
+        """
+        This function is used select the model 
+        to be used for conversion
+        
+        Args:
+            model_path (str): path to .ckpt model
+        """
+        parameters= {"model_ckpt_path":model_path}
+        self.update_onnx_configuration(parameters)
+    
+    def update_onnx_configuration(self, dict_values:dict):
+        """
+        General function used to change onnx configuration .yaml
+
+        Args:
+            dict_values (dict): dictionary containing the parameters to be changed
+        """
+        omega_dict = OmegaConf.create(dict_values)
+        
+        self.update_only_omega_conf(omega_dict,self.onf_onnx)
+        self.save_only_omega_conf(self.onf_onnx,self.omega_conf_path)
+        
 
 
 configurationHandler = ConfigurationHandler()

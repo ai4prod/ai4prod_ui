@@ -22,7 +22,7 @@
                     <td onclick="expandCell(this)" class="truncate-custom">{{ value }}</td>
                 {% endfor %}
 
-               <td> <a class="btn btn-success" href="{{ url_for('home.deploy', experiment_number=item['experiment_number']) }}">Deploy</a></td>
+               <td> <a class="btn btn-success" href="{{ url_for('home.deploy', experiment_number=item['experiment_number'],dataset_id=item["dataset_id"]) }}">Deploy</a></td>
             </tr>
           
         {% endfor %}
