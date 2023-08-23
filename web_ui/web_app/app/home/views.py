@@ -275,7 +275,14 @@ def training():
     
     return render_template("page/home/training.html",dataset_conf=dataset_conf,dataset_id=dataset_conf[0].id)
 
-
+def move_specific_keys_to_first(dictionary, keys_to_move):
+    moved_items = [(key, dictionary[key]) for key in keys_to_move if key in dictionary]
+    remaining_items = [(key, value) for key, value in dictionary.items() if key not in keys_to_move]
+    
+    new_dict = dict(moved_items + remaining_items)
+    
+    return new_dict
+    
 @home.route("/training_metrics/<int:dataset_id>")
 def training_metrics(dataset_id):
 
@@ -307,10 +314,19 @@ def training_metrics(dataset_id):
         runs_params_query = db_instance.db.session.query(
             Param).filter(Param.run_uuid == run_uuid).all()
         for param in runs_params_query:
-
+            
             tmp_dict[param.key] = param.value
+            
+            
+            
 
-        list_experiments_dict.append(tmp_dict)
+        #check if the training belongs to current dataset_id
+        if(tmp_dict["dataset_id"]==str(dataset_id)):
+            
+            keys_to_move = ['experiment_number', 'dataset_version']
+            tmp_dict = move_specific_keys_to_first(tmp_dict,keys_to_move)
+            print(tmp_dict)   
+            list_experiments_dict.append(tmp_dict)
 
     # print("query_lens")
     # print(len(runs_params_query))
