@@ -12,6 +12,7 @@
                 {% for key in list_experiments_dict[0].keys() %}
                 <th>{{ key }}</th>
                 {% endfor %}
+                <th> Action</th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +21,8 @@
                 {% for key, value in item.items() %}
                     <td onclick="expandCell(this)" class="truncate-custom">{{ value }}</td>
                 {% endfor %}
+
+               <td> <a class="btn btn-success" href="{{ url_for('home.deploy', experiment_number=item['experiment_number']) }}">Deploy</a></td>
             </tr>
           
         {% endfor %}

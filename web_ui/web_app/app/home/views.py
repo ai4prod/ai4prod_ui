@@ -332,20 +332,7 @@ def training_metrics(dataset_id):
             tmp_dict = move_specific_keys_to_first(tmp_dict,keys_to_move)
             print(tmp_dict)   
             list_experiments_dict.append(tmp_dict)
-
-    # print("query_lens")
-    # print(len(runs_params_query))
-
-    # for run_params_query in runs_params_query:
-    #     tmp_dict={}
-    #     tmp_dict[run_params_query.key]= run_params_query.value
-    #     tmp_dict["run_id"]=run_params_query.run_uuid
-    #     runs_params_dict.append(tmp_dict)
-
-    # print(runs_params_dict)
-    # for data in datas:
-
-    #     print(data.run_uuid)
+            
 
     return render_template("page/home/training_metrics.html", list_experiments_dict=list_experiments_dict)
 
@@ -355,8 +342,11 @@ def optimization():
     return render_template('page/home/optimization.html')
 
 
-@home.route('/deploy')
-def deploy():
+@home.route('/deploy/<int:experiment_number>')
+def deploy(experiment_number):
+    
+    print(experiment_number)
+    
     return render_template('page/home/deploy.html')
 
 
