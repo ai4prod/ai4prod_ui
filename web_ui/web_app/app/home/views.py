@@ -234,12 +234,15 @@ def change_dataset_version(dataset_id, tag_version):
 @home.route("/start_training", methods=['GET', 'POST'])
 def start_training():
     
+    #Before start training i need to update the experiment number
+    configurationHandler.update_experiment_number_omega_conf()
+    
     my_thread = threading.Thread(target=train_with_hydra)
     my_thread.start()
     result="Training Started"
     return jsonify({"result": result})
 
-@home.route("/training", methods=['GET', 'POST'])
+@home.route("/training/", methods=['GET', 'POST'])
 def training():
 
     if request.method == 'POST':
@@ -270,11 +273,11 @@ def training():
     
     dataset_conf = Dataset.query.filter(Dataset.is_selected==1).all()
     
-    return render_template("page/home/training.html",dataset_conf=dataset_conf)
+    return render_template("page/home/training.html",dataset_conf=dataset_conf,dataset_id=dataset_conf[0].id)
 
 
-@home.route("/training_metrics")
-def training_metrics():
+@home.route("/training_metrics/<int:dataset_id>")
+def training_metrics(dataset_id):
 
     runs_uuid_query = db_instance.db.session.query(Run).with_entities(
         Run.run_uuid).filter(Run.status == "FINISHED").all()

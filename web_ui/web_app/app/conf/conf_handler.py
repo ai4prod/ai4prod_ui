@@ -126,7 +126,27 @@ class ConfigurationHandler:
         self.update_conf(dict_values=dataset_values,
                          omega_dict_values=omega_dict_values)
         
+    def update_experiment_number_omega_conf(self,):
+        
+        """_summary_
+        
+        This function is used to update omega_conf experiment number. Usually
+        called before starting a new training
+        
+        """
+        
+        dirfolder = self.onf["base_path_experiment"] + self.onf["experiment_name"] + "/"
+        print(dirfolder)
+        
+        if (os.path.isdir(dirfolder)):
 
+            list_dir = os.listdir(dirfolder)
+            self.onf["experiment_number"] = len(list_dir)
+        else:
+            self.onf["experiment_number"] = 0
+            
+        self.save_only_omega_conf()
+        
     def save_only_omega_conf(self):
         """
         Save Omega conf self.onf into self.omge_conf_path
