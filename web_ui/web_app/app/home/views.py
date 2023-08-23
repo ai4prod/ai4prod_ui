@@ -275,9 +275,13 @@ def training():
     
     return render_template("page/home/training.html",dataset_conf=dataset_conf,dataset_id=dataset_conf[0].id)
 
-def move_specific_keys_to_first(dictionary, keys_to_move):
+def move_specific_keys_to_first(dictionary, 
+                                keys_to_move,
+                                include_others=False):
     moved_items = [(key, dictionary[key]) for key in keys_to_move if key in dictionary]
-    remaining_items = [(key, value) for key, value in dictionary.items() if key not in keys_to_move]
+    remaining_items=[]
+    if include_others:
+        remaining_items = [(key, value) for key, value in dictionary.items() if key not in keys_to_move]
     
     new_dict = dict(moved_items + remaining_items)
     
@@ -322,8 +326,9 @@ def training_metrics(dataset_id):
 
         #check if the training belongs to current dataset_id
         if(tmp_dict["dataset_id"]==str(dataset_id)):
-            
-            keys_to_move = ['experiment_number', 'dataset_version']
+            # TODO: some keys are task specific like val_accuracy is only for classification
+            # Need to change based on different task
+            keys_to_move = ['experiment_number', 'dataset_version',"dataset_path","val_accuracy","val_cross_entropy"]
             tmp_dict = move_specific_keys_to_first(tmp_dict,keys_to_move)
             print(tmp_dict)   
             list_experiments_dict.append(tmp_dict)
