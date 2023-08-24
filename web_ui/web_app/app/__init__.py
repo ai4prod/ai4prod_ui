@@ -16,6 +16,7 @@ def init_extensions(app: Flask):
     
 
 
+
 def get_root_dir_abs_path() -> str:
     """
     Get the absolute path to the root directory of the application.

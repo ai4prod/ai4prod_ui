@@ -1,7 +1,7 @@
-base_path_experiment: C:/Users/erict/OneDrive\Desktop/Develop/experimentNew/
+base_path_experiment: C:\Users\erict\OneDrive\Desktop\Develop\ai4prodGuiData\Experiment\
 data_version_name: Dataset.dvc
-data_version_tag: '1'
-dataset_path: C:/Users/
-dataset_versioning: false
+data_version_tag: '0'
+dataset_path: C:\Users\erict\OneDrive\Desktop\Develop\ai4prodGuiData\Dataset\classification\
+dataset_versioning: true
 db_name: general
 task: classification

@@ -18,6 +18,7 @@ from app.db.mlflow_shema import Param, Run, Metric, Dataset, DatasetVersion, Con
 from app.db.database_instance import db_instance
 from sqlalchemy import desc
 import datetime
+from app.home.utils import has_trailing_slash
 from app.data.dataset import DatasetHandler, datasetHandler
 import datetime
 from app.home import data_instance
@@ -63,8 +64,16 @@ def dataset():
 
         tag_version = "0"
         
-        
-        
+        if(has_trailing_slash(local_path)):
+            local_path= local_path +f"Dataset\\{conf.task}\\"
+        else:
+            local_path= local_path +f"\\Dataset\\{conf.task}\\"
+
+        if(has_trailing_slash(dvc_remote_path)):
+            dvc_remote_path= dvc_remote_path + f"RemoteDataset\\{conf.task}\\{repo_name}Remote\\"
+        else:
+            dvc_remote_path= dvc_remote_path + f"\\RemoteDataset\\{conf.task}\\{repo_name}Remote\\"
+
         #-----
         # REPOSITORY SETUP
         #-----
