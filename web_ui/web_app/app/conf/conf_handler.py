@@ -23,7 +23,7 @@ class ConfigurationHandler:
         self.omega_conf_path = None
         self.experiment_folder=None
         self.omega_conf_onnx_path = None
-        self.dataset_for_training=None
+        
 
     def init(self, root_exec):
 
@@ -107,9 +107,9 @@ class ConfigurationHandler:
         """
         
         #This path is used for training and validate the model
-        self.dataset_for_training= f"{experiment_name}\\Data\\Dataset\\"
+        
 
-        dataset_values = {"dataset_path": self.dataset_for_training,
+        dataset_values = {"dataset_path": dataset_path,
                           "dataset_id": dataset_id,
                           "data_version_tag": dataset_version_tag,
                           "dataset_versioning": dataset_versioning}
