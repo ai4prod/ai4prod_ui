@@ -8,10 +8,6 @@ import os
 import shutil
 
 
-
-
-
-
 class BicbucketConnection():
     """
     See this to understand how to setup connection
@@ -157,9 +153,8 @@ class GitHandler():
         tag = self.local_repo.create_tag(
             tag_version, message=message)
         print(tag)
-    
-    def change_to_tag(self,tag_version):
 
+    def change_to_tag(self, tag_version):
         """
         Change git reposiotry to specific tag
 
@@ -199,7 +194,7 @@ class DvcHandler():
         self.dvc_file_list = []
 
     def execute_pipeline_commands(self, pipeline):
-        output=[]
+        output = []
         for command in pipeline:
             #print(f"-- {' '.join(command)} --")
             result = subprocess.run(
@@ -254,36 +249,35 @@ class DvcHandler():
 
         self.execute_pipeline_commands(push_dataset_remote)
         print("dvc Update Dataset")
-    
+
     def check_status(self):
 
-        check_pipeline=[
-            ["dvc","status"]
+        check_pipeline = [
+            ["dvc", "status"]
         ]
-        result=self.execute_pipeline_commands(check_pipeline)
+        result = self.execute_pipeline_commands(check_pipeline)
 
-        return True if ("changed" in result[0] or "modified" in result[0]) else False 
+        return True if ("changed" in result[0] or "modified" in result[0]) else False
 
     def pull_version(self):
-
         """
         Used to change dataset version locally using tag
-        
+
         """
         pull_version = [
             ['dvc', 'pull'],
         ]
 
-        result=self.execute_pipeline_commands(pull_version)
+        result = self.execute_pipeline_commands(pull_version)
 
 
 class DatasetHandler():
 
     def __init__(self) -> None:
-        self.bitbucket=None
-        self.gitHandler=None
-        self.dvcHandler=None
-        
+        self.bitbucket = None
+        self.gitHandler = None
+        self.dvcHandler = None
+
     """
     This class will implementh method to init and update dataset version
     :param local_repo_path: Path to folder without bitbucket_repository_name for example /Home/Ubuntu/{bitbucket_repository_name}
@@ -294,32 +288,33 @@ class DatasetHandler():
     :param bitbucket_repository_name remote repository name
     :param bitbucket_workspace_name remote bitbucket workspace name
     """
+
     def setup(self,
-                local_repo_path: str,
-                bibucket_username: str,
-                bitbucket_password: str,
-                bitbucket_repository_name: str,
-                bitbucket_workspace_name: str,
-                dvc_remote_path: str,
-                dvc_remote_ssh_user=None,
-                dvc_remote_ssh_psw=None,
-                dvc_remote_ssh_ip=None,
-                create_repository=True,
-                ) -> None:
+              local_repo_path: str,
+              bibucket_username: str,
+              bitbucket_password: str,
+              bitbucket_repository_name: str,
+              bitbucket_workspace_name: str,
+              dvc_remote_path: str,
+              dvc_remote_ssh_user=None,
+              dvc_remote_ssh_psw=None,
+              dvc_remote_ssh_ip=None,
+              create_repository=True,
+              ) -> None:
 
         print(bibucket_username)
-        
+
         if (self.bitbucket is not None):
-            self.bitbucket=None
+            self.bitbucket = None
         if (self.dvcHandler is not None):
-            self.dvcHandler=None
+            self.dvcHandler = None
         if (self.gitHandler is not None):
-            self.gitHandler=None
+            self.gitHandler = None
 
         self.bitbucket = BicbucketConnection(username=bibucket_username,
-                                            password=bitbucket_password,
-                                            repo_name=bitbucket_repository_name,
-                                            workspace_name=bitbucket_workspace_name)
+                                             password=bitbucket_password,
+                                             repo_name=bitbucket_repository_name,
+                                             workspace_name=bitbucket_workspace_name)
         if(create_repository):
             self.bitbucket.create_repository(
                 repo_description="create from python")
@@ -330,11 +325,11 @@ class DatasetHandler():
         self.gitHandler = GitHandler(local_repo_path, remote_repo_url)
 
         self.dvcHandler = DvcHandler(local_repo=self.gitHandler.local_repo_path,
-                                    dvc_remote_path=dvc_remote_path,
-                                    dvc_remote_ssh_user=dvc_remote_ssh_user,
-                                    dvc_remote_ssh_psw=dvc_remote_ssh_psw,
-                                    dvc_remote_ssh_ip=dvc_remote_ssh_ip)
-    
+                                     dvc_remote_path=dvc_remote_path,
+                                     dvc_remote_ssh_user=dvc_remote_ssh_user,
+                                     dvc_remote_ssh_psw=dvc_remote_ssh_psw,
+                                     dvc_remote_ssh_ip=dvc_remote_ssh_ip)
+
     def getCurretFileConfLocation(self, repo_template_name="data_versioning_template"):
         """
         :param task select type of task for example classification. This needs to have the same folder name of the task
@@ -356,6 +351,28 @@ class DatasetHandler():
 
         return current_repo_location
 
+    def remove_contents_in_folder(self,folder_path:str):
+        """ 
+        Remove all the contente inside folder_path
+        args:
+            :param folder_path: path of folder to remove all the content
+        """
+        for item in os.listdir(folder_path):
+            item_path = os.path.join(folder_path, item)
+            if os.path.isfile(item_path):
+                os.remove(item_path)
+                print(f"Removed file: {item_path}")
+            elif os.path.isdir(item_path):
+                shutil.rmtree(item_path)
+                print(f"Removed folder: {item_path}")
+        
+
+    def get_folders_in_path(self, base_path):
+
+        folders = [folder for folder in os.listdir(
+            base_path) if os.path.isdir(os.path.join(base_path, folder))]
+        return folders
+
     def copyFoldersFromTemplateRepo(self, task_name):
         """
         This function will copy all the necessary folders to init a dataset
@@ -374,6 +391,17 @@ class DatasetHandler():
 
             shutil.copytree(template_folder_path + folders_to_copy_key,
                             self.gitHandler.local_repo_path + folders_to_copy[folders_to_copy_key])
+        data_folders = []
+        print(f"TASK NAME {task_name}")
+        if(task_name == "classification"):
+
+            base_path = self.gitHandler.local_repo_path + "/Data/Dataset/"
+            data_folders = self.get_folders_in_path(base_path=base_path)
+            #Remove all placeholder folders and file on training dataset
+            for data_folder in data_folders:
+                folder_path = base_path + data_folder
+                self.remove_contents_in_folder(folder_path=folder_path)
+                print(f"REMOVE {folder_path}")
 
         for file in files_to_copy:
             print(self.gitHandler.local_repo_path + file)
@@ -405,7 +433,7 @@ class DatasetHandler():
         self.gitHandler.push_to_remote()
 
         # TODO: Salvare a database i parametri del dataset inizializzato
-    
+
     def updateTag(self, tag_version):
         """
         This Function will update tag_version 
@@ -416,44 +444,40 @@ class DatasetHandler():
 
         """
         self.dvcHandler.update_dataset()
-        
+
         self.gitHandler.add_and_commit(
-             f"update dataset to version{tag_version}")
+            f"update dataset to version{tag_version}")
         self.gitHandler.update_tag(tag_version=tag_version,
                                    message=f"update to version {tag_version}",
                                    )
-        
+
         self.gitHandler.push_to_remote()
         self.gitHandler.push_tag_to_remote(tag_version)
         self.dvcHandler.push_to_remote()
-    
-    def change_dataset_version(self, 
-                               tag_version:str):
 
+    def change_dataset_version(self,
+                               tag_version: str):
         """
         :param tag_verison: version of dataset to retrieve 
         This function will retrieve a dataset with a specific tag_version
         """
-        
+
         self.gitHandler.change_to_tag(tag_version)
         self.dvcHandler.pull_version()
 
-        
 
-
-datasetHandler= DatasetHandler()
+datasetHandler = DatasetHandler()
 
 if __name__ == "__main__":
 
-    
     data_file_path = 'C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python\\'
     result = subprocess.run(
-                ['dvc', 'status'], cwd=data_file_path, capture_output=True, text=True)
+        ['dvc', 'status'], cwd=data_file_path, capture_output=True, text=True)
 
-    output=result.stdout.strip()
-    
+    output = result.stdout.strip()
+
     if "changed" in output or "modified" in output:
-        
+
         input("t")
     #bitbucket= BicbucketConnection(username="",password="")
     # bitbucket.get_all_projects("vedev-2")
@@ -487,5 +511,5 @@ if __name__ == "__main__":
     #                         remote_dataset=remote_dvc)
 
     # dvcHandler.init_git_repo_with_dvc()
-    
+
     print("FINISH")
