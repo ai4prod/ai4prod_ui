@@ -24,7 +24,7 @@ class ConfigurationHandler:
         self.experiment_folder=None
         self.omega_conf_onnx_path = None
 
-        self.conf_prefix="\\app\\home\\ai4prod_python\\"
+        self.conf_prefix="/app/home/ai4prod_python/"
         self.mlconfiguration= MlConfiguration()
         
 
@@ -51,11 +51,11 @@ class ConfigurationHandler:
                                                             base_experiment_path=self.dict_conf["base_path_experiment"])
 
         self.omega_conf_path = self.root_exec + self.conf_prefix + \
-            self.dict_conf["task"] + "\\conf\\" + \
+            self.dict_conf["task"] + "/conf/" + \
             self.dict_conf["task"] + ".yaml"
         
         self.omega_conf_onnx_path = self.root_exec + self.conf_prefix + \
-            self.dict_conf["task"] + "\\conf\\onnx\\standard.yaml"
+            self.dict_conf["task"] + "/conf/onnx/standard.yaml"
             
         self.onf = OmegaConf.load(self.omega_conf_path)
         self.onf_onnx = OmegaConf.load(self.omega_conf_onnx_path)

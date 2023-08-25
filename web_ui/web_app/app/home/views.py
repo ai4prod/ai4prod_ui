@@ -1,4 +1,5 @@
-from flask import render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for
+from flask import render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for,send_file
+from zipfile import ZipFile
 import flask
 from . import home
 from pathlib import Path
@@ -66,14 +67,14 @@ def dataset():
         tag_version = "0"
         
         if(has_trailing_slash(local_path)):
-            local_path= local_path +f"Dataset\\{conf.task}\\"
+            local_path= local_path +f"Dataset/{conf.task}/"
         else:
-            local_path= local_path +f"\\Dataset\\{conf.task}\\"
+            local_path= local_path +f"/Dataset/{conf.task}/"
 
         if(has_trailing_slash(dvc_remote_path)):
-            dvc_remote_path= dvc_remote_path + f"RemoteDataset\\{conf.task}\\{repo_name}Remote\\"
+            dvc_remote_path= dvc_remote_path + f"RemoteDataset/{conf.task}/{repo_name}Remote/"
         else:
-            dvc_remote_path= dvc_remote_path + f"\\RemoteDataset\\{conf.task}\\{repo_name}Remote\\"
+            dvc_remote_path= dvc_remote_path + f"/RemoteDataset/{conf.task}/{repo_name}Remote/"
 
         #-----
         # REPOSITORY SETUP
@@ -350,8 +351,62 @@ def training_metrics(dataset_id):
 @home.route('/optimization')
 def optimization():
     return render_template('page/home/optimization.html')
+    model_path=request.args.get('model_path')
 
 
+
+
+@home.route('/download_folder/')
+def download_folder():
+
+    # model_path=request.args.get('model_path')
+
+    model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\test\\dataset_version_2\\"
+    print(model_path)
+    zip_filename = 'C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\test\\dataset_version_2\\configuration.zip'
+
+    # Create a zip file on-the-fly containing the folder's contents
+    with ZipFile(zip_filename, 'w') as zipf:
+        for root, dirs, files in os.walk(model_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                zipf.write(file_path, os.path.relpath(file_path, model_path))
+
+    # Send the zip file as a download response
+    return send_file(zip_filename, as_attachment=True)
+
+
+@home.route("/check_conversion/")
+def check_conversion():
+
+    dataset_version = request.args.get('dataset_version')
+    model_path=request.args.get('model_path')
+
+
+    onnx_json_data = request.args.get('data')
+
+    print("CHECK_CONVERSION")
+    print(model_path)
+
+    model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\train\\trained_models\\"
+    base_path = model_path.split("train\\", 1)[0]
+    test_configuration_path=base_path + f"test\\dataset_version_{dataset_version}"
+
+    configuration=False
+    print(test_configuration_path)
+
+    if os.path.exists(test_configuration_path) and os.path.isdir(test_configuration_path):
+       configuration=True
+    else:
+        configuration=False
+
+    #return jsonify({"configuration":{"value":configuration,"path":test_configuration_path}})
+    print(configuration)
+    if(configuration):
+        return jsonify({'message': configuration,"model_path":test_configuration_path})
+    return jsonify({'message': configuration})
+    
+    
 @home.route('/deploy/<int:experiment_number>/<int:dataset_id>')
 def deploy(experiment_number,dataset_id):
     
@@ -365,7 +420,7 @@ def deploy(experiment_number,dataset_id):
     print(configuration.task)
     print(dataset.repo_name)
 
-    model_path=f"{configuration.base_path_experiment}{configuration.task}\\{dataset.repo_name}\\exp_{experiment_number}\\train\\trained_models\\resnet18.ckpt"
+    model_path=f"{configuration.base_path_experiment}{configuration.task}/{dataset.repo_name}/exp_{experiment_number}/train/trained_models/resnet18.ckpt"
 
     print(f"MODEL PATH {model_path}")
     
@@ -374,12 +429,17 @@ def deploy(experiment_number,dataset_id):
 
     #Creo il modello Onnx
 
-    my_thread = threading.Thread(target=convert_to_onnx_with_hydra)
-    my_thread.start()
+    # my_thread = threading.Thread(target=convert_to_onnx_with_hydra)
+    # my_thread.start()
 
-    #Scarico il Modello di Onnx in un File Zip
+    #model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\train\\trained_models\\"
+    base_path = model_path.split("train/", 1)[0]
+    onnx_cfg_path=base_path + f"test\\dataset_version_{dataset.current_version}"
+
+    onnx_json_data = json.dumps({"onnx_cfg": onnx_cfg_path})  # Convert JSON to string
     
-    return render_template('page/home/deploy.html')
+    
+    return render_template('page/home/deploy.html',model_path=model_path,dataset_version=dataset.current_version,onnx_json_data=onnx_json_data)
 
 
 @home.route('/configuration', methods=["GET", "POST"])

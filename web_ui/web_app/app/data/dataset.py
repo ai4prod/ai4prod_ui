@@ -344,7 +344,7 @@ class DatasetHandler():
         current_repo_location = None
         if sys.platform.startswith('win'):
             current_repo_location = current_location + \
-                f"\\{repo_template_name}\\"
+                f"/{repo_template_name}/"
         else:
             current_repo_location = current_location + \
                 f"/{repo_template_name}/"
@@ -470,7 +470,7 @@ datasetHandler = DatasetHandler()
 
 if __name__ == "__main__":
 
-    data_file_path = 'C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python\\'
+    data_file_path = 'C:/Users/erict/OneDrive/Desktop/Develop/test_python/'
     result = subprocess.run(
         ['dvc', 'status'], cwd=data_file_path, capture_output=True, text=True)
 
@@ -483,16 +483,16 @@ if __name__ == "__main__":
     # bitbucket.get_all_projects("vedev-2")
 
     #bitbucket.create_repository("test_python_api","vedev-2","create from python api")
-    # gitHandler = GitHandler("C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\",
+    # gitHandler = GitHandler("C:/Users/erict/OneDrive/Desktop/Develop/",
     #                         "")
     # gitHandler.clone_repository()
     #gitHandler.add_and_commit("commit from python")
     # gitHandler.add_update_submodule()
-    # local_repo_path = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\"
+    # local_repo_path = "C:/Users/erict/OneDrive/Desktop/Develop/"
     # bit_repo_name = "test_python"
     # bit_workspace_name = "vedev-2"
 
-    # remote_dvc = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python_remote\\"
+    # remote_dvc = "C:/Users/erict/OneDrive/Desktop/Develop/test_python_remote/"
 
     # datasetHan = DatasetHandler(local_repo_path=local_repo_path,
     #                             bibucket_username=bit_user,
@@ -505,7 +505,7 @@ if __name__ == "__main__":
     # #datasetHan.copyFoldersFromTemplateRepo("classification")
     # datasetHan.initDataset()
     # datasetHan.updateTag("v1")
-    # remote_dvc = "C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\test_python_remote\\"
+    # remote_dvc = "C:/Users/erict/OneDrive/Desktop/Develop/test_python_remote/"
 
     # dvcHandler = DvcHandler(local_repo=local_repo_path,
     #                         remote_dataset=remote_dvc)
