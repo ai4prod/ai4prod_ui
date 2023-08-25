@@ -429,8 +429,8 @@ def deploy(experiment_number,dataset_id):
 
     #Creo il modello Onnx
 
-    # my_thread = threading.Thread(target=convert_to_onnx_with_hydra)
-    # my_thread.start()
+    my_thread = threading.Thread(target=convert_to_onnx_with_hydra)
+    my_thread.start()
 
     #model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\train\\trained_models\\"
     base_path = model_path.split("train/", 1)[0]
