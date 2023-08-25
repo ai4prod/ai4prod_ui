@@ -4,6 +4,7 @@ import os
 from app import create_app
 from app.conf.conf_handler import configurationHandler
 
+
 db_uri = None
 # # Set current file path to load config independent from python launch path
 current_exec_path = os.path.abspath(__file__)

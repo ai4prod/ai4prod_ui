@@ -2,7 +2,7 @@ import yaml
 import os
 from omegaconf import DictConfig, OmegaConf, open_dict
 from app.home.ai4prod_python.ml_utils.ml_utils import setup_path
-
+from app.home.ai4prod_python.ml_utils.ml_conf.mlconfiguration import MlConfiguration
 
 class ConfigurationHandler:
 
@@ -23,6 +23,9 @@ class ConfigurationHandler:
         self.omega_conf_path = None
         self.experiment_folder=None
         self.omega_conf_onnx_path = None
+
+        self.conf_prefix="\\app\\home\\ai4prod_python\\"
+        self.mlconfiguration= MlConfiguration()
         
 
     def init(self, root_exec):
@@ -37,11 +40,21 @@ class ConfigurationHandler:
             print(f"{self.conf_path} already exists. Read Old Configuration")
             self.read_conf_file()
 
-        self.omega_conf_path = self.root_exec + "\\app\\home\\ai4prod_python\\" + \
+
+        #generate ml_conf path for task and experiment name
+        if(self.dict_conf["task"]=="classification"):
+            mlconf_path= self.root_exec + f"{self.conf_prefix}{self.dict_conf['task']}"
+            
+            print(mlconf_path)
+
+            self.mlconfiguration.create_classification_conf(base_path=mlconf_path,
+                                                            base_experiment_path=self.dict_conf["base_path_experiment"])
+
+        self.omega_conf_path = self.root_exec + self.conf_prefix + \
             self.dict_conf["task"] + "\\conf\\" + \
             self.dict_conf["task"] + ".yaml"
         
-        self.omega_conf_onnx_path = self.root_exec + "\\app\\home\\ai4prod_python\\" + \
+        self.omega_conf_onnx_path = self.root_exec + self.conf_prefix + \
             self.dict_conf["task"] + "\\conf\\onnx\\standard.yaml"
             
         self.onf = OmegaConf.load(self.omega_conf_path)
