@@ -233,7 +233,7 @@ class ConfigurationHandler:
     #ONNX CONFIGURATION
     
     
-    def update_onnx_converstion(self,model_path:str):
+    def update_onnx_conversion_parameters(self,model_path:str):
         """
         This function is used select the model 
         to be used for conversion
@@ -252,9 +252,10 @@ class ConfigurationHandler:
             dict_values (dict): dictionary containing the parameters to be changed
         """
         omega_dict = OmegaConf.create(dict_values)
+        print(self.omega_conf_onnx_path)
         
-        self.update_only_omega_conf(omega_dict,self.onf_onnx)
-        self.save_only_omega_conf(self.onf_onnx,self.omega_conf_path)
+        self.onf_onnx = self.update_only_omega_conf(omega_dict,self.onf_onnx)
+        self.save_only_omega_conf(self.onf_onnx,self.omega_conf_onnx_path)
         
 
 

@@ -8,6 +8,7 @@ import sys
 import csv
 import base64
 from .ai4prod_python.classification.train import train_with_hydra
+from .ai4prod_python.classification.onnxConversion import convert_to_onnx_with_hydra
 import threading
 import random
 import plotly
@@ -363,6 +364,20 @@ def deploy(experiment_number,dataset_id):
     print(configuration.base_path_experiment)
     print(configuration.task)
     print(dataset.repo_name)
+
+    model_path=f"{configuration.base_path_experiment}{configuration.task}\\{dataset.repo_name}\\exp_{experiment_number}\\train\\trained_models\\resnet18.ckpt"
+
+    print(f"MODEL PATH {model_path}")
+    
+    #Cambio la configurazione di onnx
+    configurationHandler.update_onnx_conversion_parameters(model_path=model_path)
+
+    #Creo il modello Onnx
+
+    my_thread = threading.Thread(target=convert_to_onnx_with_hydra)
+    my_thread.start()
+
+    #Scarico il Modello di Onnx in un File Zip
     
     return render_template('page/home/deploy.html')
 
