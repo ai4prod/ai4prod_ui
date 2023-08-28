@@ -64,16 +64,22 @@ def download_folder():
 
     
     zip_path = download_folder + download_name + '.zip'
-    folder_path = configuration_path
+    configuration_path
 
     #folder_path= "C:/Users/erict/OneDrive/Desktop/Develop/ai4prodGuiData/Experiment/classification/test_intel/exp_6/test/dataset_version_2/"
 
     with zipfile.ZipFile(zip_path, 'w') as zipf:
-        for root, _, files in os.walk(folder_path):
+        for root, _, files in os.walk(configuration_path):
             for file in files:
                 file_path = os.path.join(root, file)
                 if excluded_extensions is None or not file_path.endswith(tuple(excluded_extensions)):
-                    arcname = os.path.relpath(file_path, folder_path)
+                    arcname = os.path.relpath(file_path, configuration_path)
+                    zipf.write(file_path, arcname=arcname)
+        for root, _, files in os.walk(onnx_model_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                if excluded_extensions is None or not file_path.endswith(tuple(excluded_extensions)):
+                    arcname = os.path.relpath(file_path, onnx_model_path)
                     zipf.write(file_path, arcname=arcname)
 
 
