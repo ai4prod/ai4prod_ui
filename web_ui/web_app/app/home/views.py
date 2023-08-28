@@ -1,5 +1,5 @@
 from flask import render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for,send_file
-from zipfile import ZipFile
+import zipfile
 import os
 
 
@@ -15,6 +15,10 @@ import app.home.views_training
 import app.home.views_optimization
 import app.home.views_deploy
 
+import json
+
+
+from pathlib import Path 
 # Dove sono arrivato
 """
 Ho creato la pagina di visualizzazione delle statistiche in una tabella. Il primo problema è che le metriche visualizzate,
@@ -39,20 +43,42 @@ Forse dovrei creare una lista di esperimenti e quando uno clicca l'esperimento s
 def download_folder():
 
     # model_path=request.args.get('model_path')
+    data = request.args.get('onnx_json_data')
 
-    model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\test\\dataset_version_2\\"
-    print(model_path)
-    zip_filename = 'C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\test\\dataset_version_2\\configuration.zip'
+    print("DATA")
+    print(data)
+    
+    excluded_extensions = ['.zip']
 
-    # Create a zip file on-the-fly containing the folder's contents
-    with ZipFile(zip_filename, 'w') as zipf:
-        for root, dirs, files in os.walk(model_path):
+    configuration_path= json.loads(data)["onnx_cfg"] +"/"
+     
+    download_name= "download"
+    download_folder= configuration_path +"download/"
+
+    #create download folder if not exists
+    Path(download_folder).mkdir(
+            parents=True, exist_ok=True)
+
+    
+    onnx_model_path= json.loads(data)["model_path"] + "onnx/" 
+
+    
+    zip_path = download_folder + download_name + '.zip'
+    folder_path = configuration_path
+
+    #folder_path= "C:/Users/erict/OneDrive/Desktop/Develop/ai4prodGuiData/Experiment/classification/test_intel/exp_6/test/dataset_version_2/"
+
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        for root, _, files in os.walk(folder_path):
             for file in files:
                 file_path = os.path.join(root, file)
-                zipf.write(file_path, os.path.relpath(file_path, model_path))
+                if excluded_extensions is None or not file_path.endswith(tuple(excluded_extensions)):
+                    arcname = os.path.relpath(file_path, folder_path)
+                    zipf.write(file_path, arcname=arcname)
+
 
     # Send the zip file as a download response
-    return send_file(zip_filename, as_attachment=True)
+    return send_file(zip_path, as_attachment=True, download_name=f"{download_name}.zip")
 
 
 @home.route('/configuration', methods=["GET", "POST"])

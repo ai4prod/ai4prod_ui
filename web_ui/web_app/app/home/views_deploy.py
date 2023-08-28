@@ -57,8 +57,9 @@ def deploy(experiment_number,dataset_id):
     print(configuration.task)
     print(dataset.repo_name)
 
-    model_path=f"{configuration.base_path_experiment}{configuration.task}/{dataset.repo_name}/exp_{experiment_number}/train/trained_models/resnet18.ckpt"
+    model_base_path=f"{configuration.base_path_experiment}{configuration.task}/{dataset.repo_name}/exp_{experiment_number}/train/trained_models/"
 
+    model_path= model_base_path + "resnet18.ckpt"
     print(f"MODEL PATH {model_path}")
     
     #Cambio la configurazione di onnx
@@ -71,9 +72,9 @@ def deploy(experiment_number,dataset_id):
 
     #model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\train\\trained_models\\"
     base_path = model_path.split("train/", 1)[0]
-    onnx_cfg_path=base_path + f"test\\dataset_version_{dataset.current_version}"
+    onnx_cfg_path=base_path + f"test/dataset_version_{dataset.current_version}"
 
-    onnx_json_data = json.dumps({"onnx_cfg": onnx_cfg_path})  # Convert JSON to string
+    onnx_json_data = json.dumps({"onnx_cfg": onnx_cfg_path,"model_path":model_base_path})  # Convert JSON to string
     
     
     return render_template('page/home/deploy.html',model_path=model_path,dataset_version=dataset.current_version,onnx_json_data=onnx_json_data)
