@@ -1,7 +1,7 @@
 version: '3'
 services:
   ai4prod_ui_container_dev:
-    image: ai4prod_ui:base #Specifiy The image
+    image: ai4prod/ai4prod_ui:base #Specifiy The image
     command: ["/bin/bash"]
     shm_size: '8gb'
     tty: true
