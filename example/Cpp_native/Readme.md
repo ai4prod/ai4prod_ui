@@ -8,7 +8,9 @@
 2) Install Library Deps
 
 ``` 
-$ sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config mesa-utils libibus-1.0-dev libx11-dev libxft-dev libxext-dev ibwayland-dev libxkbcommon-dev libegl1-mesa-dev libasound2-dev libpulse-dev libglfw3 libglfw3-dev xorg-dev
+$ sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config mesa-utils libibus-1.0-dev libx11-dev libxft-dev libxext-dev libxkbcommon-dev libegl1-mesa-dev libasound2-dev libpulse-dev libglfw3 libglfw3-dev xorg-dev  libxmu-dev libxi-dev libgl-dev
+
+
 ```
 3) Check if OpenGL is installed
 

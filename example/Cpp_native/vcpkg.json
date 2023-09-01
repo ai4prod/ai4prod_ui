@@ -4,6 +4,7 @@
   "dependencies": [
     "fmt",
     "glfw3",
+    "glew",
     { 
       "name": "imgui", 
       "features": [

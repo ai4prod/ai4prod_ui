@@ -23,10 +23,13 @@ set(PRJ_LIBRARIES
     # opengl
     OpenGL::GL
     ${OpenCV_LIBS}
+    #OpenGL extension library
+    GLEW::GLEW
 )
 
 find_package(imgui CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 # add dependency find_package calls and similar here
 find_package(fmt CONFIG REQUIRED)
