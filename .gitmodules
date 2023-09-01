@@ -1,3 +1,9 @@
 [submodule "example/Cpp_native/vcpkg"]
 	path = example/Cpp_native/vcpkg
 	url = https://github.com/microsoft/vcpkg.git
+[submodule "web_ui/web_app/app/home/ai4prod_python"]
+	path = web_ui/web_app/app/home/ai4prod_python
+	url = https://github.com/ai4prod/ai4prod_python.git
+[submodule "web_ui/web_app/app/data/data_versioning_template"]
+	path = web_ui/web_app/app/data/data_versioning_template
+	url = https://github.com/ai4prod/data_versioning_template.git

@@ -1,0 +1,57 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block body %}
+
+<div class="containerd-flex flex-column">
+    {% include "page/component/nav_bar.html" %}
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-6">
+                <h2>Versions List </h2>
+
+                <table class="table table-bordered table-striped">
+
+                    <thead>
+                        <tr>
+                            <th class="text-center">Version</th>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Change Version</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for dataset_version in datasets_versions_list %}
+                        
+                        {% if current_version==dataset_version.tag_version %} 
+                        <tr class="table-success">
+                            <td class="text-center"> <b>{{dataset_version.tag_version}}</b></td>
+                            <td class="text-center" ><b>{{dataset_version.timestamp}}</b></td>
+                            <td class="text-center"> <b>Selezionata</b> </td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td class="text-center">{{dataset_version.tag_version}}</td>
+                            <td class="text-center" >{{dataset_version.timestamp}}</td>
+                            <td class="text-center"><a class="btn btn-primary" href="{{ url_for('home.change_dataset_version', dataset_id= dataset_id,tag_version=dataset_version.tag_version) }}">Cambia</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+          
+
+            <div class="col-6 text-center">
+                {% include "page/turbo_component/dataset_change.html" %}
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

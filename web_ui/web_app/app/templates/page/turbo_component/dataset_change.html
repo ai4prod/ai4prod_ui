@@ -1,0 +1,13 @@
+<div id="dataset_change" class=" dataset_change">
+
+    <h2>Stato Dataset </h2>
+
+
+{% if dataset_change %}
+    <p>Modifiche al Dataset agggiorna la versione {{current_dataset_id}}</p>
+    <a class="btn btn-primary" href="/update_dataset_version/{{current_dataset_id}}" > Aggiorna Versione </a>
+{% else %}
+    <p>Nessuna modifica aggiornato all'ultima versione</p>
+{% endif %}
+
+</div>

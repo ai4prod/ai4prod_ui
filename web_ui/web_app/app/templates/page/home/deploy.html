@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block body %}
+
+<div class="containerd-flex flex-column">
+  {% include "page/component/nav_bar.html" %}
+
+
+  <div class="container mt-4">
+    <h1>Deploy</h1>
+    <p>Create Model and Configuration ready to be used in C++</p>
+
+    <a  class="btn btn-success" href="{{ url_for('home.download_folder', onnx_json_data=onnx_json_data)}}"  id="download" style="visibility: hidden;">Download the model and configuration</a>
+  
+  </div>
+</div>
+
+
+
+<!-- https://stackoverflow.com/a/30011819 -->
+<script>
+  $(document).ready(function () {
+    var intervalId;
+    var timeoutCount = 0; // Number of times the interval has run
+    var maxTimeoutCount = 10; // Maximum number of intervals
+    // Define a function to recursively call the route
+    function checkOnnx() {
+      $.ajax({
+        url: '/check_conversion/',
+        method: 'GET',
+        data: { "dataset_version": "{{dataset_version}}", "model_path": "{{model_path}}" },
+        success: function (data) {
+          if (data.message) {
+            console.log("STOP INTERVAL");
+            clearInterval(intervalId);
+            $('#download').css('visibility', function(index, value) {
+                return (value === 'hidden') ? 'visible' : 'hidden';
+            });
+          } else {
+            //console.log("print message");
+          }
+        }
+      });
+
+      timeoutCount++;
+
+      if (timeoutCount >= maxTimeoutCount) {
+        console.log("Timeout Stop Interval")
+        clearInterval(intervalId); // Stop the interval when the condition is met
+      }
+    }
+
+    intervalId = setInterval(checkOnnx, 1000);
+
+  });
+
+
+</script>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %} {% block title %}
+  Home
+{% endblock %} {% block body %}
+  <div class="containerd-flex flex-column">
+    {% include 'page/component/nav_bar.html' %}
+
+    <div class="container mt-4">
+      <h1>Configurazione di Training</h1>
+
+      <div class="row">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th class="text-center">Local Path</th>
+              <th class="text-center">Remote Path</th>
+              <th class="text-center">Current Version</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dataset in dataset_conf %}
+              <tr>
+                <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.local_path }}</td>
+                <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.git_remote_path }}</td>
+                <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.current_version }}</td>
+                <td onclick="expandCell(this)" class="text-center truncate-custom">
+                  <a class="btn btn-success" href="{{ url_for('home.dataset_statistics', dataset_id = dataset.id) }}">Go</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row justify-content-center mt-4">
+        <button class="btn btn-primary" id="startTraining">Start Training</button>
+      </div>
+      <div class="row justify-content-center mt-4">
+        <div id="result"></div>
+      </div>
+      <div class="row justify-content-center mt-4">
+        <a class="btn btn-info" href="{{ url_for('home.training_metrics', dataset_id=dataset_id) }}">Visualizza Metriche</a>
+      </div>
+    </div>
+
+    <!-- https://stackoverflow.com/a/30011819 -->
+    <!-- <script type="text/javascript" src="{{url_for('static', filename='js/index.js')}}"></script> -->
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('#startTraining').click(function () {
+        $.ajax({
+          type: 'POST',
+          url: '/start_training',
+          success: function (data) {
+            $('#result').text(data.result)
+          }
+        })
+      })
+    })
+    
+    function expandCell(cell) {
+      cell.classList.toggle('expanded')
+    }
+  </script>
+{% endblock %}

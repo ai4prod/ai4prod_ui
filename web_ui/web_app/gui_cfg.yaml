@@ -1,0 +1,7 @@
+base_path_experiment: /home/Develop/experiment/
+data_version_name: Dataset.dvc
+data_version_tag: '2'
+dataset_path: /home/Develop/Dataset/
+dataset_versioning: true
+db_name: general
+task: classification
