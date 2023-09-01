@@ -1,0 +1,13 @@
+version: '3'
+services:
+  ai4prod_ui_container_prod:
+    build:
+      context: ./dockerfiles
+      dockerfile: DockerfileProduction
+    ports:
+      - 80:80
+      - 4040:4040
+    volumes:
+      - :/home/Develop/Experiment
+      - :/home/Develop/Dataset
+    image: ai4prod_ui:latest

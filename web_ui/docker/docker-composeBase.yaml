@@ -1,0 +1,7 @@
+version: '3'
+services:
+  my_service:
+    build:
+      context: ./dockerfiles
+      dockerfile: DockerfileBaseImage
+    image: ai4prod_ui:base

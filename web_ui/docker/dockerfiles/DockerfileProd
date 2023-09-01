@@ -1,0 +1,9 @@
+#This dockerFile is used to create the BaseImage for ai4prod_ui
+
+# Build from ai4prod_python dockerfile
+FROM ai4prod/ai4prod_ui:base 
+
+CMD ["python","production.py"]
+
+
+
