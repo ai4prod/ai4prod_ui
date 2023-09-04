@@ -11,9 +11,9 @@ class ConfigurationHandler:
 
         self.dict_conf = {
             'db_name': 'general',
-            'base_path_experiment': 'C:/Users/erict/OneDrive/Desktop/Develop/experimentNew/',
+            'base_path_experiment': '/home/Develop/Experiment/',
             'task': "classification",
-            'dataset_path': 'C:/Users/',
+            'dataset_path': '/home/Develop/Dataset/',
             'dataset_versioning': False,
             'data_version_tag': '1',
             'data_version_name': 'Dataset.dvc',
@@ -59,6 +59,14 @@ class ConfigurationHandler:
             
         self.onf = OmegaConf.load(self.omega_conf_path)
         self.onf_onnx = OmegaConf.load(self.omega_conf_onnx_path)
+
+    def get_dataset_path(self):
+        
+        """
+        Return current path for datasets
+
+        """
+        return self.dict_conf["dataset_path"]
 
 
     def save_conf_file(self):

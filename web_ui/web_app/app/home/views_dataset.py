@@ -21,7 +21,9 @@ def dataset():
     datasets_list = Dataset.query.all()
 
     if request.method == 'POST':
-        local_path = request.form['local_path']
+        # TODO: comment for reference in docker container local path is fixed
+        #local_path = request.form['local_path']
+        local_path= configurationHandler.get_dataset_path()
         repo_name = request.form['repo_name']
         bitbucket_user = request.form['bitbucket_user']
         bitbucket_password = request.form['bitbucket_password']
@@ -32,16 +34,22 @@ def dataset():
         dvc_remote_path = request.form['dvc_remote_path']
 
         tag_version = "0"
-        
+         
         if(has_trailing_slash(local_path)):
-            local_path= local_path +f"Dataset/{conf.task}/"
+            local_path= local_path +f"/{conf.task}/"
         else:
-            local_path= local_path +f"/Dataset/{conf.task}/"
+            local_path= local_path +f"/{conf.task}/"
+        
 
-        if(has_trailing_slash(dvc_remote_path)):
-            dvc_remote_path= dvc_remote_path + f"RemoteDataset/{conf.task}/{repo_name}Remote/"
+        remote_path=f"RemoteDataset/{conf.task}/{repo_name}Remote/"
+        
+        if dvc_remote_path is None:
+            dvc_remote_path=local_path.split("Dataset/")[0] + remote_path
         else:
-            dvc_remote_path= dvc_remote_path + f"/RemoteDataset/{conf.task}/{repo_name}Remote/"
+            if(has_trailing_slash(dvc_remote_path)):
+                dvc_remote_path= dvc_remote_path + remote_path
+            else:
+                dvc_remote_path= dvc_remote_path + remote_path
 
         #-----
         # REPOSITORY SETUP
