@@ -4,10 +4,20 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: DockerfileProduction
+    shm_size: '8gb'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     ports:
       - 80:80
-      - 4040:4040
     volumes:
-      - :/home/Develop/Experiment
-      - :/home/Develop/Dataset
+      volumes:
+      - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/Experiment:/home/Develop/Experiment
+      - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/Dataset:/home/Develop/Dataset
+      - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/RemoteDataset:/home/Develop/RemoteDataset
+      - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/Configuration:/home/Develop/Configuration
     image: ai4prod_ui:latest

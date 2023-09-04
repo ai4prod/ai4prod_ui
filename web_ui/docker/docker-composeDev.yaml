@@ -13,10 +13,10 @@ services:
               count: 1
               capabilities: [gpu]
     ports:
-      - 80:80
       - 4040:4040
     volumes:
       - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/Experiment:/home/Develop/Experiment
       - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/Dataset:/home/Develop/Dataset
+      - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/RemoteDataset:/home/Develop/RemoteDataset
       - /media/dati/Develop/ai4prod_repo/Coding/Ai4prodGuiData/Configuration:/home/Develop/Configuration
     
