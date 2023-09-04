@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Check if the container name is provided as an argument
-if [ $# -eq 0 ]; then
-    echo "Usage: $0 <container_name>"
-    exit 1
-fi
 
 # Get the container name from the command line argument
 container_name="docker_ai4prod_ui_container_dev_1"
