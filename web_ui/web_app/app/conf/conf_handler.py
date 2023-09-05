@@ -14,10 +14,17 @@ class ConfigurationHandler:
             'base_path_experiment': '/home/Develop/Experiment/',
             'task': "classification",
             'dataset_path': '/home/Develop/Dataset/',
+            'dataset_remote': '/home/Develop/RemoteDataset/',
             'dataset_versioning': False,
             'data_version_tag': '1',
             'data_version_name': 'Dataset.dvc',
         }
+
+        self.bitbucket_conf={
+            "bitbucket_user": "",
+            "bitbucket_password":""
+        }
+        self.bitbucket_conf_path="/home/Develop/Configuration/bitbucket_conf.yaml"
         self.onf = None
         self.onf_onnx = None
         self.omega_conf_path = None
@@ -59,6 +66,29 @@ class ConfigurationHandler:
             
         self.onf = OmegaConf.load(self.omega_conf_path)
         self.onf_onnx = OmegaConf.load(self.omega_conf_onnx_path)
+
+        #setup bitbucket password for Cloud
+        self.setup_bitbucket_cloud()
+
+    def setup_bitbucket_cloud(self,):
+        """
+        Create bibucket conf if not exists inside configuration folder 
+        If configuration files exists load the current value inside 
+        self.bitbucket_conf
+        """
+        if not os.path.exists(self.bitbucket_conf_path):
+            with open(self.bitbucket_conf_path, "w") as yaml_file:
+                yaml.dump(self.bitbucket_conf, yaml_file, default_flow_style=False)
+        else:
+            # If the YAML file exists, read its contents
+            with open(self.bitbucket_conf_path, "r") as yaml_file:
+                self.bitbucket_conf = yaml.safe_load(yaml_file)
+
+        print(f"BITBUCKET CONF {self.bitbucket_conf}")
+
+    def get_bitbucket_cloud_credentials(self,):
+
+        return self.bitbucket_conf["bitbucket_user"],self.bitbucket_conf["bitbucket_password"]
 
     def get_dataset_path(self):
         
@@ -170,7 +200,7 @@ class ConfigurationHandler:
         called before starting a new training
         
         """
-        
+        print(f"EXP NAME {self.onf['experiment_name']}")
         self.experiment_folder = self.onf["base_path_experiment"] + self.onf["experiment_name"] + "/"
         print(self.experiment_folder)
         

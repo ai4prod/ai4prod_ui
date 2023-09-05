@@ -25,8 +25,12 @@ def dataset():
         #local_path = request.form['local_path']
         local_path= configurationHandler.get_dataset_path()
         repo_name = request.form['repo_name']
-        bitbucket_user = request.form['bitbucket_user']
-        bitbucket_password = request.form['bitbucket_password']
+        #Password and used are loaded from configuration file
+        # bitbucket_user = request.form['bitbucket_user']
+        # bitbucket_password = request.form['bitbucket_password']
+
+        bitbucket_user, bitbucket_password= configurationHandler.get_bitbucket_cloud_credentials()
+        
         bitbucket_workspace = request.form['bitbucket_workspace']
         dvc_remote_ssh_user = request.form['dvc_remote_ssh_user']
         dvc_remote_ssh_psw = request.form['dvc_remote_ssh_psw']
@@ -41,7 +45,7 @@ def dataset():
             local_path= local_path +f"/{conf.task}/"
         
 
-        remote_path=f"RemoteDataset/{conf.task}/{repo_name}Remote/"
+        remote_path=configurationHandler.dict_conf["dataset_remote"]+ f"/{conf.task}/{repo_name}Remote/"
         
         if dvc_remote_path is None:
             dvc_remote_path=local_path.split("Dataset/")[0] + remote_path
@@ -51,6 +55,7 @@ def dataset():
             else:
                 dvc_remote_path= dvc_remote_path + remote_path
 
+        print(f"REMOTE PATH {dvc_remote_path}")
         #-----
         # REPOSITORY SETUP
         #-----
