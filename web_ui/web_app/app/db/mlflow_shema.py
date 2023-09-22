@@ -201,6 +201,8 @@ class Configuration(db_instance.db.Model):
     task = Column(String(20),default="classification")
     configuration_name= Column(String(50),unique=True)
     #bitbucket handled by name using 
+    bitbucket_username= Column(String(60))
+    bitbucket_password= Column(String(60))
     bitbucket_email= Column(String(60))
     bitbucket_workspace= Column(String(60))
     dvc_remote_ssh_user = Column(String(60))

@@ -16,26 +16,33 @@ from sqlalchemy import desc
 def dataset():
     global datasetHandler
     
-    conf = Configuration.query.filter_by(id=1).first()
-    
     datasets_list = Dataset.query.all()
+    configurations_list= Configuration.query.all()
 
     if request.method == 'POST':
         # TODO: comment for reference in docker container local path is fixed
         #local_path = request.form['local_path']
+        
+        conf_id = request.form.get('configuration_list')
+        conf = Configuration.query.filter(Configuration.id ==conf_id).first()
+        
+        print(conf.task)
+
         local_path= configurationHandler.get_dataset_path()
         repo_name = request.form['repo_name']
         #Password and used are loaded from configuration file
         # bitbucket_user = request.form['bitbucket_user']
         # bitbucket_password = request.form['bitbucket_password']
 
-        bitbucket_user, bitbucket_password= configurationHandler.get_bitbucket_cloud_credentials()
+        #REMOVE USE SSH INSTEAD
+        #bitbucket_user, bitbucket_password= configurationHandler.get_bitbucket_cloud_credentials()
         
-        bitbucket_workspace = request.form['bitbucket_workspace']
-        dvc_remote_ssh_user = request.form['dvc_remote_ssh_user']
-        dvc_remote_ssh_psw = request.form['dvc_remote_ssh_psw']
-        dvc_remote_ssh_ip = request.form['dvc_remote_ssh_ip']
-        dvc_remote_path = request.form['dvc_remote_path']
+
+        # bitbucket_workspace = request.form['bitbucket_workspace']
+        # dvc_remote_ssh_user = request.form['dvc_remote_ssh_user']
+        # dvc_remote_ssh_psw = request.form['dvc_remote_ssh_psw']
+        # dvc_remote_ssh_ip = request.form['dvc_remote_ssh_ip']
+        # dvc_remote_path = request.form['dvc_remote_path']
 
         tag_version = "0"
          
@@ -47,24 +54,26 @@ def dataset():
 
         remote_path=configurationHandler.dict_conf["dataset_remote"]+ f"/{conf.task}/{repo_name}Remote/"
         
-        if dvc_remote_path is None:
-            dvc_remote_path=local_path.split("Dataset/")[0] + remote_path
+        if conf.dvc_remote_path is None:
+            conf.dvc_remote_path=local_path.split("Dataset/")[0] + remote_path
         else:
-            if(has_trailing_slash(dvc_remote_path)):
-                dvc_remote_path= dvc_remote_path + remote_path
+            if(has_trailing_slash(conf.dvc_remote_path)):
+                conf.dvc_remote_path= conf.dvc_remote_path + remote_path
             else:
-                dvc_remote_path= dvc_remote_path + remote_path
+                conf.dvc_remote_path= conf.dvc_remote_path + remote_path
 
-        print(f"REMOTE PATH {dvc_remote_path}")
+        
+        print(f"REMOTE PATH {conf.dvc_remote_path}")
+        
         #-----
         # REPOSITORY SETUP
         #-----
         datasetHandler.setup(local_repo_path=local_path,
-                             dvc_remote_path=dvc_remote_path,
-                             bibucket_username=bitbucket_user,
-                             bitbucket_password=bitbucket_password,
+                             dvc_remote_path=conf.dvc_remote_path,
+                             bibucket_username=conf.bitbucket_username,
+                             bitbucket_password=conf.bitbucket_password,
                              bitbucket_repository_name=repo_name,
-                             bitbucket_workspace_name=bitbucket_workspace)
+                             bitbucket_workspace_name=conf.bitbucket_workspace)
 
         datasetHandler.initDataset()
         git_remote_path = datasetHandler.gitHandler.remote_repo_url
@@ -75,13 +84,13 @@ def dataset():
                               repo_name=repo_name,
                               local_path=local_path,
                               git_remote_path=git_remote_path,
-                              bitbucket_user=bitbucket_user,
-                              bitbucket_password=bitbucket_password,
-                              bitbucket_workspace=bitbucket_workspace,
-                              dvc_remote_ssh_user=dvc_remote_ssh_user,
-                              dvc_remote_ssh_psw=dvc_remote_ssh_psw,
-                              dvc_remote_ssh_ip=dvc_remote_ssh_ip,
-                              dvc_remote_path=dvc_remote_path)
+                              bitbucket_user=conf.bitbucket_username,
+                              bitbucket_password=conf.bitbucket_password,
+                              bitbucket_workspace=conf.bitbucket_workspace,
+                              dvc_remote_ssh_user=conf.dvc_remote_ssh_user,
+                              dvc_remote_ssh_psw=conf.dvc_remote_ssh_psw,
+                              dvc_remote_ssh_ip=conf.dvc_remote_ssh_ip,
+                              dvc_remote_path=conf.dvc_remote_path)
         db_instance.db.session.add(new_dataset)
         db_instance.db.session.commit()
         
@@ -102,25 +111,27 @@ def dataset():
         db_instance.db.session.add(init_dataset_version)
         db_instance.db.session.commit()
         
-        return redirect(url_for('home.dataset', datasets_list=datasets_list))
+        return redirect(url_for('home.dataset', datasets_list=datasets_list,configurations_list=configurations_list))
         
         
 
     #Update or Create configuration into DB
 
-    if conf:
-        print("UPDATE CONF")
-        conf.base_path_experiment= configurationHandler.dict_conf["base_path_experiment"]
-        conf.task= configurationHandler.dict_conf["task"]
-    else:
-        print("CREATE CONF")
-        conf= Configuration(base_path_experiment=configurationHandler.dict_conf["base_path_experiment"],
-                            task=configurationHandler.dict_conf["task"] )
-        db_instance.db.session.add(conf)    
+    # if conf:
+    #     print("UPDATE CONF")
+    #     conf.base_path_experiment= configurationHandler.dict_conf["base_path_experiment"]
+    #     conf.task= configurationHandler.dict_conf["task"]
+    # else:
+    #     print("CREATE CONF")
+    #     conf= Configuration(base_path_experiment=configurationHandler.dict_conf["base_path_experiment"],
+    #                         task=configurationHandler.dict_conf["task"] )
+    #     db_instance.db.session.add(conf)    
     
-    db_instance.db.session.commit()
+    # db_instance.db.session.commit()
 
-    return render_template("page/home/dataset.html", datasets_list=datasets_list)
+    print(configurations_list)
+
+    return render_template("page/home/dataset.html", datasets_list=datasets_list,configurations_list=configurations_list)
 
 
 @home.route("/dataset_statistics/<int:dataset_id>", methods=['GET', 'POST'])

@@ -1,7 +1,7 @@
 base_path_experiment: /home/Develop/Experiment/
 data_version_name: Dataset.dvc
-data_version_tag: '1'
-dataset_path: /home/Develop/Dataset/classification//classification/
+data_version_tag: '0'
+dataset_path: /home/Develop/Dataset/classification//classification//classification/
 dataset_remote: /home/Develop/RemoteDataset/
 dataset_versioning: true
 db_name: general

@@ -13,60 +13,56 @@
 
         {% with errors = get_flashed_messages(category_filter=["error"]) %}
         {% if errors %}
-        <div class="alert alert-danger alert-dismissible fade show"
-             role="alert">
-            <ul>
-                {%- for msg in errors %}
-                <li>{{ msg }}</li>
-                {% endfor -%}
-            </ul>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <ul>
+            {%- for msg in errors %}
+            <li>{{ msg }}</li>
+            {% endfor -%}
+          </ul>
 
-            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                    aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endif %}
         {% endwith %}
 
         {% with messages = get_flashed_messages(category_filter=["success"]) %}
         {% if messages %}
-        <div class="alert alert-success alert-dismissible fade show"
-             role="alert">
-            <ul>
-                {%- for msg in messages %}
-                <li>{{ msg }}</li>
-                {% endfor -%}
-            </ul>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <ul>
+            {%- for msg in messages %}
+            <li>{{ msg }}</li>
+            {% endfor -%}
+          </ul>
 
-            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                    aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endif %}
         {% endwith %}
-        
-        
+
+
         <h6> Setup connessione ssh con Bitbucket globalmente</h6>
-        <form action="#" method="POST" class="mt-5" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="bitbucket_email">Bitbucket email:</label>
-            <input type="text" class="form-control" placeholder="email usata per connettersi account bitbucket"
-              name="bitbucket_email" id="bitbucket_email">
-          </div>
 
-          <div class="form-group text-center">
-            <label for="bitbucket_workspace">Genera la chiave di Bitbucket</label>
-            <p><b>Utilizza questo link</b> per capire come settare la chiave su bitbucket <a
-                href="https://support.atlassian.com/bitbucket-cloud/docs/set-up-personal-ssh-keys-on-linux/">Clicca
-                qui</a></p>
-            <ol>
-              <li> Cliica su Genera </li>
-              <li> Copia la chiave su bitbucket come specificato nel link nella sezione "Provide Bitbucket Cloud with
-                your public key" </li>
-            </ol>
-            <textarea id="ssh_key" rows="10" cols="50"></textarea>
-            <button type="button" id="ssh_generator" class="btn btn-danger">Genera</button>
-          </div>
-        </form>
+        <div class="form-group">
+          <label for="bitbucket_email">Bitbucket email:</label>
+          <input type="text" class="form-control" placeholder="email usata per connettersi account bitbucket"
+            name="bitbucket_email" id="bitbucket_email">
+        </div>
 
+        <div class="form-group text-center">
+          <label for="bitbucket_workspace">Genera la chiave di Bitbucket</label>
+          <p><b>Utilizza questo link</b> per capire come settare la chiave su bitbucket <a
+              href="https://support.atlassian.com/bitbucket-cloud/docs/set-up-personal-ssh-keys-on-linux/">Clicca
+              qui</a></p>
+          <ol>
+            <li> Cliica su Genera </li>
+            <li> Copia la chiave su bitbucket come specificato nel link nella sezione "Provide Bitbucket Cloud with
+              your public key" </li>
+          </ol>
+          <textarea id="ssh_key" rows="10" cols="50"></textarea>
+          <button type="button" id="ssh_generator" class="btn btn-danger">Genera</button>
+        </div>
+
+        <h2>Configurazione di Training</h2>
 
         <h6> Crea la configurazione che potrai usare per gestire i dati e il training</h6>
         <form action="{{url_for('home.configuration')}}" method="POST" class="mt-5" enctype="multipart/form-data">
@@ -88,6 +84,19 @@
           </div>
 
           <div class="form-group">
+            <label for="bitbucket_username">Bitbucket Username:</label>
+            <input type="text" class="form-control" placeholder="nome bitbucket_username" name="bitbucket_username"
+              id="bitbucket_username">
+          </div>
+          <div class="form-group">
+            <p> Segui questa guida per creare un app password per interagire con bitbucket<a
+                href="https://support.atlassian.com/bitbucket-cloud/docs/create-an-app-password/">Crea app password</a>
+            </p>
+            <label for="bitbucket_password">Bitbucket App Password:</label>
+            <input type="text" class="form-control" placeholder="nome workspace bitbucket" name="bitbucket_password"
+              id="bitbucket_password">
+          </div>
+          <div class="form-group">
             <label for="bitbucket_workspace">Bitbucket Workspace:</label>
             <input type="text" class="form-control" placeholder="nome workspace bitbucket" name="bitbucket_workspace"
               id="bitbucket_workspace">
@@ -106,21 +115,21 @@
 
           <div class="form-group">
             <label for="dvc_remote_ssh_user">Remote ssh User:</label>
-            <input type="text" class="form-control" placeholder="user bitbucket" name="dvc_remote_ssh_user"
-              id="dvc_remote_ssh_user">
+            <input type="text" class="form-control" placeholder="utente ssh per salvare i dataset su host remoto"
+              name="dvc_remote_ssh_user" id="dvc_remote_ssh_user">
           </div>
           <div class="form-group">
             <label for="dvc_remote_ssh_psw">Remote ssh Password:</label>
-            <input type="password" class="form-control" placeholder="passowrd bitbucket sarà salvata solo in locale"
+            <input type="password" class="form-control" placeholder="password connessione ssh remota"
               name="dvc_remote_ssh_psw" id="dvc_remote_ssh_psw">
           </div>
           <div class="form-group">
             <label for="dvc_remote_ssh_ip">Remote ssh IP:</label>
-            <input type="text" class="form-control" name="dvc_remote_ssh_ip" id="dvc_remote_ssh_ip">
+            <input type="text" placeholder="Ip server remoto" class="form-control" name="dvc_remote_ssh_ip"
+              id="dvc_remote_ssh_ip">
           </div>
+          <button type="submit" class="btn btn-primary">Crea Configurazione</button>
 
-
-          <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
       <div class="col"></div>

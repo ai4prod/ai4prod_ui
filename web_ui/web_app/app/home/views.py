@@ -1,4 +1,4 @@
-from flask import flash,render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for, send_file
+from flask import flash, render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for, send_file
 import zipfile
 import os
 
@@ -102,47 +102,52 @@ def get_data():
 @home.route('/configuration', methods=["GET", "POST"])
 def configuration():
 
-    error_message="TEST"
-    
+   
+
     if request.method == "POST":
-        configuration_name= request.form['configuration_name']
-        #TODO: At current time user email is not saved to database
-        bitbucket_email=""
+        print("Form submission")
+        configuration_name = request.form['configuration_name']
+        # TODO: At current time user email is not saved to database
+        bitbucket_email = ""
         base_path_experiment = request.form['base_path_experiment']
         task = request.form.get('task')
         bitbucket_workspace = request.form['bitbucket_workspace']
+        bitbucket_username = request.form['bitbucket_username']
+        bitbucket_password = request.form['bitbucket_password']
         dvc_remote_ssh_user = request.form['dvc_remote_ssh_user']
         dvc_remote_ssh_psw = request.form['dvc_remote_ssh_psw']
         dvc_remote_ssh_ip = request.form['dvc_remote_ssh_ip']
         dvc_remote_path = request.form['dvc_remote_path']
+
+        if (request.form['base_path_experiment'] == ""):
+            base_path_experiment = configurationHandler.base_path_experiment
         
-        
-        if(request.form['base_path_experiment'] == ""):
-           base_path_experiment= configurationHandler.base_path_experiment
-        try:
-            conf = Configuration(
+        conf = Configuration(
             configuration_name=configuration_name,
             bitbucket_email=bitbucket_email,
             base_path_experiment=base_path_experiment,
-            task=task,       
+            task=task,
+            bitbucket_username=bitbucket_username,
+            bitbucket_password=bitbucket_password,
             bitbucket_workspace=bitbucket_workspace,
             dvc_remote_ssh_user=dvc_remote_ssh_user,
             dvc_remote_ssh_psw=dvc_remote_ssh_psw,
             dvc_remote_ssh_ip=dvc_remote_ssh_ip,
-            dvc_remote_path=dvc_remote_path, 
-            )
-        
-            db_instance.db.session.add(conf)
-            db_instance.db.session.commit()
-            flash('Configurazione creata con successo', 'success')
-            return redirect(url_for('home.configuration'))
-        except IntegrityError as e:
-            print("INTEGRITY")
-            db_instance.db.session.rollback()  # Rollback the transaction to prevent data corruption
-            flash('Nome configurazione già presente', 'error')
-            return redirect(url_for('home.configuration'))
+            dvc_remote_path=dvc_remote_path,
+        )
 
-        except Exception as e:
-            error_message= "Errore generico.Riprova"
+        db_instance.db.session.add(conf)
+        db_instance.db.session.commit()
+        flash('Configurazione creata con successo', 'success')
+        return redirect(url_for('home.configuration'))
+        # except IntegrityError as e:
+        #     print("INTEGRITY")
+        #     # Rollback the transaction to prevent data corruption
+        #     db_instance.db.session.rollback()
+        #     flash('Nome configurazione già presente', 'error')
+        #     return redirect(url_for('home.configuration'))
+
+        # except Exception as e:
+        #     error_message = "Errore generico.Riprova"
 
     return render_template('page/home/configuration.html')

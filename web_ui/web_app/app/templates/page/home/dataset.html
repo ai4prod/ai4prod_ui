@@ -32,7 +32,7 @@
                         <label for="bitbucket_password">Bitbucket Oauth Key:</label>
                         <input type="password" class="form-control" name="bitbucket_password" id="bitbucket_password">
                     </div> -->
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="bitbucket_workspace">Bitbucket Workspace:</label>
                         <input type="text" class="form-control" name="bitbucket_workspace" id="bitbucket_workspace">
                     </div>
@@ -51,7 +51,18 @@
                     <div class="form-group">
                         <label for="dvc_remote_path">Dvc Remote Path:</label>
                         <input type="text" class="form-control" name="dvc_remote_path" id="dvc_remote_path">
-                    </div>
+                    </div> -->
+
+                    <div class="form-group">
+                        <label for="configuration_list">Select an option</label>
+                        <select class="form-control" id="configuration_list" name="configuration_list">
+                            {% for configuration in configurations_list %}
+                            <option value="{{configuration.id}}">{{configuration.configuration_name}}</option>
+                            {% endfor %}
+                        </select>
+                      </div>
+
+
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
