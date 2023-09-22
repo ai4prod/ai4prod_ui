@@ -26,15 +26,26 @@
         </div>
         {% endif %}
         {% endwith %}
-      
-        <h6> Crea la configurazione che potrai usare per gestire i dati e il training</h6>
-        <form action="{{url_for('home.configuration')}}" method="POST" class="mt-5" enctype="multipart/form-data">
 
-          <div class="form-group">
-            <label for="configuration_name">Nome Configurazione</label>
-            <input type="text" class="form-control" placeholder="nome configurazione" name="configuration_name"
-              id="configuration_name">
-          </div>
+        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+        {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+            <ul>
+                {%- for msg in messages %}
+                <li>{{ msg }}</li>
+                {% endfor -%}
+            </ul>
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        
+        <h6> Setup connessione ssh con Bitbucket globalmente</h6>
+        <form action="#" method="POST" class="mt-5" enctype="multipart/form-data">
           <div class="form-group">
             <label for="bitbucket_email">Bitbucket email:</label>
             <input type="text" class="form-control" placeholder="email usata per connettersi account bitbucket"
@@ -53,9 +64,18 @@
             </ol>
             <textarea id="ssh_key" rows="10" cols="50"></textarea>
             <button type="button" id="ssh_generator" class="btn btn-danger">Genera</button>
-
           </div>
+        </form>
 
+
+        <h6> Crea la configurazione che potrai usare per gestire i dati e il training</h6>
+        <form action="{{url_for('home.configuration')}}" method="POST" class="mt-5" enctype="multipart/form-data">
+
+          <div class="form-group">
+            <label for="configuration_name">Nome Configurazione</label>
+            <input type="text" class="form-control" placeholder="nome configurazione" name="configuration_name"
+              id="configuration_name">
+          </div>
 
           <div class="form-group">
             <label for="task">Select an option</label>

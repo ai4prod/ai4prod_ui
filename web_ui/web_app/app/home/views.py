@@ -106,7 +106,8 @@ def configuration():
     
     if request.method == "POST":
         configuration_name= request.form['configuration_name']
-        bitbucket_email=request.form['bitbucket_email']
+        #TODO: At current time user email is not saved to database
+        bitbucket_email=""
         base_path_experiment = request.form['base_path_experiment']
         task = request.form.get('task')
         bitbucket_workspace = request.form['bitbucket_workspace']
@@ -133,7 +134,8 @@ def configuration():
         
             db_instance.db.session.add(conf)
             db_instance.db.session.commit()
-        
+            flash('Configurazione creata con successo', 'success')
+            return redirect(url_for('home.configuration'))
         except IntegrityError as e:
             print("INTEGRITY")
             db_instance.db.session.rollback()  # Rollback the transaction to prevent data corruption
