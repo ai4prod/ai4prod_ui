@@ -319,7 +319,7 @@ class DatasetHandler():
             self.bitbucket.create_repository(
                 repo_description="create from python")
 
-        # TODO: This is valid for Bitbucket
+        # TODO: This is valid for Bitbucket with ssh configure
         remote_repo_url = f"git@bitbucket.org:{bitbucket_workspace_name}/{bitbucket_repository_name}.git"
 
         self.gitHandler = GitHandler(local_repo_path, remote_repo_url)

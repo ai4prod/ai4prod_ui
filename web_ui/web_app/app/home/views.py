@@ -1,24 +1,28 @@
-from flask import render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for,send_file
+from flask import flash,render_template, request, jsonify, Response, make_response, session, current_app, redirect, url_for, send_file
 import zipfile
 import os
 
 
 from . import home
 
-from app.db.mlflow_shema import  Configuration
+from app.db.mlflow_shema import Configuration
 from app.db.database_instance import db_instance
 
 
-#Views Import
-import app.home.views_dataset 
-import app.home.views_training 
+# Views Import
+import app.home.views_dataset
+import app.home.views_training
 import app.home.views_optimization
 import app.home.views_deploy
 
 import json
+from pathlib import Path
 
 
-from pathlib import Path 
+from app.home.utils import generate_ssh_configuration
+from app.conf.conf_handler import configurationHandler
+from sqlalchemy.exc import IntegrityError
+import random
 # Dove sono arrivato
 """
 Ho creato la pagina di visualizzazione delle statistiche in una tabella. Il primo problema è che le metriche visualizzate,
@@ -47,26 +51,24 @@ def download_folder():
 
     print("DATA")
     print(data)
-    
+
     excluded_extensions = ['.zip']
 
-    configuration_path= json.loads(data)["onnx_cfg"] +"/"
-     
-    download_name= "download"
-    download_folder= configuration_path +"download/"
+    configuration_path = json.loads(data)["onnx_cfg"] + "/"
 
-    #create download folder if not exists
+    download_name = "download"
+    download_folder = configuration_path + "download/"
+
+    # create download folder if not exists
     Path(download_folder).mkdir(
-            parents=True, exist_ok=True)
+        parents=True, exist_ok=True)
 
-    
-    onnx_model_path= json.loads(data)["model_path"] + "onnx/" 
+    onnx_model_path = json.loads(data)["model_path"] + "onnx/"
 
-    
     zip_path = download_folder + download_name + '.zip'
     configuration_path
 
-    #folder_path= "C:/Users/erict/OneDrive/Desktop/Develop/ai4prodGuiData/Experiment/classification/test_intel/exp_6/test/dataset_version_2/"
+    # folder_path= "C:/Users/erict/OneDrive/Desktop/Develop/ai4prodGuiData/Experiment/classification/test_intel/exp_6/test/dataset_version_2/"
 
     with zipfile.ZipFile(zip_path, 'w') as zipf:
         for root, _, files in os.walk(configuration_path):
@@ -82,21 +84,63 @@ def download_folder():
                     arcname = os.path.relpath(file_path, onnx_model_path)
                     zipf.write(file_path, arcname=arcname)
 
-
     # Send the zip file as a download response
     return send_file(zip_path, as_attachment=True, download_name=f"{download_name}.zip")
 
 
+@home.route('/configuration/generat_ssh_key/', methods=['POST'])
+def get_data():
+    data = request.get_json()
+
+    email = data["email"]
+    print(email)
+    ssh_key = generate_ssh_configuration(email)
+    ssh_key = {"ssh_key": ssh_key}
+    return jsonify(ssh_key)
+
+
 @home.route('/configuration', methods=["GET", "POST"])
 def configuration():
-    if request.method == "POST":
-        task = request.form.get('task')
-        base_path_experiment = request.form['base_path_experiment']
 
-        conf = Configuration(base_path_experiment=base_path_experiment,
-                             task=task)
-        
-        db_instance.db.session.add(conf)
-        db_instance.db.session.commit()
+    error_message="TEST"
     
+    if request.method == "POST":
+        configuration_name= request.form['configuration_name']
+        bitbucket_email=request.form['bitbucket_email']
+        base_path_experiment = request.form['base_path_experiment']
+        task = request.form.get('task')
+        bitbucket_workspace = request.form['bitbucket_workspace']
+        dvc_remote_ssh_user = request.form['dvc_remote_ssh_user']
+        dvc_remote_ssh_psw = request.form['dvc_remote_ssh_psw']
+        dvc_remote_ssh_ip = request.form['dvc_remote_ssh_ip']
+        dvc_remote_path = request.form['dvc_remote_path']
+        
+        
+        if(request.form['base_path_experiment'] == ""):
+           base_path_experiment= configurationHandler.base_path_experiment
+        try:
+            conf = Configuration(
+            configuration_name=configuration_name,
+            bitbucket_email=bitbucket_email,
+            base_path_experiment=base_path_experiment,
+            task=task,       
+            bitbucket_workspace=bitbucket_workspace,
+            dvc_remote_ssh_user=dvc_remote_ssh_user,
+            dvc_remote_ssh_psw=dvc_remote_ssh_psw,
+            dvc_remote_ssh_ip=dvc_remote_ssh_ip,
+            dvc_remote_path=dvc_remote_path, 
+            )
+        
+            db_instance.db.session.add(conf)
+            db_instance.db.session.commit()
+        
+        except IntegrityError as e:
+            print("INTEGRITY")
+            db_instance.db.session.rollback()  # Rollback the transaction to prevent data corruption
+            flash('Nome configurazione già presente', 'error')
+            return redirect(url_for('home.configuration'))
+
+        except Exception as e:
+            error_message= "Errore generico.Riprova"
+
     return render_template('page/home/configuration.html')

@@ -197,6 +197,17 @@ class DatasetVersion(db_instance.db.Model):
 class Configuration(db_instance.db.Model):
     __tablename__ = 'configuration'
     id = Column(Integer, primary_key=True)
-    base_path_experiment = Column(String(150))
-    task = Column(String(20))
+    base_path_experiment = Column(String(150), default="/home/Develop/Experiment/")
+    task = Column(String(20),default="classification")
+    configuration_name= Column(String(50),unique=True)
+    #bitbucket handled by name using 
+    bitbucket_email= Column(String(60))
+    bitbucket_workspace= Column(String(60))
+    dvc_remote_ssh_user = Column(String(60))
+    dvc_remote_ssh_psw = Column(String(60))
+    dvc_remote_ssh_ip = Column(String(60))
+    dvc_remote_path= Column(String(200))
+
+
+    
     

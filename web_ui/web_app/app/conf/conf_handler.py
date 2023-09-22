@@ -24,6 +24,7 @@ class ConfigurationHandler:
             "bitbucket_user": "",
             "bitbucket_password":""
         }
+        self.base_path_experiment="/home/Develop/Experiment/"
         self.bitbucket_conf_path="/home/Develop/Configuration/bitbucket_conf.yaml"
         self.onf = None
         self.onf_onnx = None
