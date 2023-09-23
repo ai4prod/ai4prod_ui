@@ -24,35 +24,6 @@
                         <label for="repo_name">Repository Name</label>
                         <input type="text" class="form-control" name="repo_name" id="repo_name">
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="bitbucket_user">User:</label>
-                        <input type="text" class="form-control" name="bitbucket_user" id="bitbucket_user">
-                    </div>
-                    <div class="form-group">
-                        <label for="bitbucket_password">Bitbucket Oauth Key:</label>
-                        <input type="password" class="form-control" name="bitbucket_password" id="bitbucket_password">
-                    </div> -->
-                    <!-- <div class="form-group">
-                        <label for="bitbucket_workspace">Bitbucket Workspace:</label>
-                        <input type="text" class="form-control" name="bitbucket_workspace" id="bitbucket_workspace">
-                    </div>
-                    <div class="form-group">
-                        <label for="dvc_remote_ssh_user">Remote ssh User:</label>
-                        <input type="text" class="form-control" name="dvc_remote_ssh_user" id="dvc_remote_ssh_user">
-                    </div>
-                    <div class="form-group">
-                        <label for="dvc_remote_ssh_psw">Remote ssh Password:</label>
-                        <input type="password" class="form-control" name="dvc_remote_ssh_psw" id="dvc_remote_ssh_psw">
-                    </div>
-                    <div class="form-group">
-                        <label for="dvc_remote_ssh_ip">Remote ssh IP:</label>
-                        <input type="text" class="form-control" name="dvc_remote_ssh_ip" id="dvc_remote_ssh_ip">
-                    </div>
-                    <div class="form-group">
-                        <label for="dvc_remote_path">Dvc Remote Path:</label>
-                        <input type="text" class="form-control" name="dvc_remote_path" id="dvc_remote_path">
-                    </div> -->
-
                     <div class="form-group">
                         <label for="configuration_list">Select an option</label>
                         <select class="form-control" id="configuration_list" name="configuration_list">
@@ -72,19 +43,38 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th class="text-center">Local Path</th>
-                        <th class="text-center">Remote Path</th>
-                        <th class="text-center">Current Version</th>
-                        <th class="text-center">Action</th>
+                        <th class="text-center">Path Locale/th>
+                        <th class="text-center">Path Remota</th>
+                        <th class="text-center">Versione Corrente</th>
+                        <th class="text-center">Statistiche</th>
+                        <th class="text-center">Stato</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for dataset in datasets_list %}
                     <tr>
+                        {% if dataset.is_selected==1 %} 
+                        <tr class="table-success">
+                            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.local_path }}</td>
+                            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.git_remote_path }}</td>
+                            <td onclick="expandCell(this)" class="text-center truncate-custom">{{dataset.current_version}}</td>
+                            <td onclick="expandCell(this)" class="text-center truncate-custom"><a class="btn btn-success" href="{{ url_for('home.dataset_statistics', dataset_id=dataset.id) }}">Go</a></td>
+                        
+                            <td class="text-center"> <b>Selezionata</b> </td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                              
                         <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.local_path }}</td>
                         <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.git_remote_path }}</td>
                         <td onclick="expandCell(this)" class="text-center truncate-custom">{{dataset.current_version}}</td>
                         <td onclick="expandCell(this)" class="text-center truncate-custom"><a class="btn btn-success" href="{{ url_for('home.dataset_statistics', dataset_id=dataset.id) }}">Go</a></td>
+                        <td class="text-center"><a class="btn btn-primary" href="{{ url_for('home.change_main_dataset', dataset_id= dataset.    id) }}">Cambia</a>
+                    </tr>
+                        {% endif %}
+                      
                     </tr>
                     {% endfor %}
                     

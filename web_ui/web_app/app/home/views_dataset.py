@@ -134,12 +134,25 @@ def dataset():
     return render_template("page/home/dataset.html", datasets_list=datasets_list,configurations_list=configurations_list)
 
 
+@home.route("/change_main_dataset/<int:dataset_id>/")
+def change_main_dataset(dataset_id):
+
+    print("CHANGE_DATASET_VERSION")
+    print(dataset_id)
+    
+    dataset_instance = Dataset.query.filter_by(id=dataset_id).first()
+
+    # Use the select method to select this dataset
+    dataset_instance.select()
+
+    return redirect(url_for('home.dataset'))
+
 @home.route("/dataset_statistics/<int:dataset_id>", methods=['GET', 'POST'])
 def dataset_statistics(dataset_id):
 
     # retrive data for selected dataset
 
-    dataset_version_query = DatasetVersion.query.all()
+    dataset_version_query = DatasetVersion.query.filter(DatasetVersion.dataset_id==dataset_id).all()
 
     print(dataset_version_query)
 
