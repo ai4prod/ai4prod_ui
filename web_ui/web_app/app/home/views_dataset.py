@@ -174,6 +174,7 @@ def dataset_statistics(dataset_id):
                          bitbucket_workspace_name=dataset_query.bitbucket_workspace,
                          create_repository=False)
     data_instance.current_dataset_id = dataset_id
+    data_instance.repo_name= dataset_query.repo_name
 
     return render_template("page/home/dataset_statistics.html", datasets_versions_list=dataset_version_query, dataset_id=dataset_id, current_version=dataset_query.current_version)
 

@@ -10,4 +10,5 @@ class Data:
         self.epoch_counter = 0
         self.loss = {}
         self.dataset_change = False
+        self.repo_name=""
         self.current_dataset_id = 0

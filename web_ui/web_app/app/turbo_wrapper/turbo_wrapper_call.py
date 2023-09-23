@@ -17,11 +17,8 @@ def update_load():
     index=0
     with app_instance.app_context():
         while True:
-            index= index +1
             data_instance.loss[index] = random.random()
             
-           
-
             if(datasetHandler.dvcHandler is not None):
 
                 data_instance.dataset_change= datasetHandler.dvcHandler.check_status()
@@ -29,7 +26,7 @@ def update_load():
                 
             
             
-            time.sleep(1)
+            time.sleep(0.3)
             turboWrapper.turbo.push(turboWrapper.turbo.replace(render_template('page/turbo_component/epoch_counter.html'), 'epoch_counter'))
             turboWrapper.turbo.push(turboWrapper.turbo.replace(render_template('page/turbo_component/loss_chart.html'), 'chart1'))
             turboWrapper.turbo.push(turboWrapper.turbo.replace(render_template('page/turbo_component/dataset_change.html'), 'dataset_change'))
@@ -61,5 +58,4 @@ def inject_load():
     
     loss_train=json.dumps(fig,cls= plotly.utils.PlotlyJSONEncoder)
 
-
-    return {'load1': load[0], 'load5': load[1], 'load15': load[2],"loss_train":loss_train, "dataset_change":data_instance.dataset_change,"current_dataset_id":data_instance.current_dataset_id}
+    return {'load1': load[0], 'load5': load[1], 'load15': load[2],"loss_train":loss_train, "dataset_change":data_instance.dataset_change,"repo_name":data_instance.repo_name}
