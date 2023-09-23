@@ -53,9 +53,9 @@ def training():
     
     #Retrieve dataset statistics
     
-    dataset_conf = Dataset.query.filter(Dataset.is_selected==1).all()
+    dataset_conf = Dataset.query.filter(Dataset.is_selected==1).first()
     
-    return render_template("page/home/training.html",dataset_conf=dataset_conf,dataset_id=dataset_conf[0].id)
+    return render_template("page/home/training.html",dataset_conf=dataset_conf,dataset_id=dataset_conf.id)
 
 def move_specific_keys_to_first(dictionary, 
                                 keys_to_move,
