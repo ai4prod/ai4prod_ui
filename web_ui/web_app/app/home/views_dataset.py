@@ -34,7 +34,7 @@ def dataset():
         # bitbucket_user = request.form['bitbucket_user']
         # bitbucket_password = request.form['bitbucket_password']
 
-        #REMOVE USE SSH INSTEAD
+        #REMOVE Saved inside Database Instead
         #bitbucket_user, bitbucket_password= configurationHandler.get_bitbucket_cloud_credentials()
         
 
@@ -142,8 +142,14 @@ def change_main_dataset(dataset_id):
     
     dataset_instance = Dataset.query.filter_by(id=dataset_id).first()
 
+    configuration= Configuration.query.filter_by(data_instance.conf_id == Configuration.id).first()
     # Use the select method to select this dataset
     dataset_instance.select()
+    
+    configurationHandler.update_gui_cfg_task(task=configuration.task,
+                                             dataset_id=data_instance.id,
+                                             dataset_version_tag=dataset_instance.current_version
+                                             )
 
     return redirect(url_for('home.dataset'))
 
