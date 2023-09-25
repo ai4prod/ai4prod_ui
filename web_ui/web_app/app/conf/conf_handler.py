@@ -14,7 +14,8 @@ class ConfigurationHandler:
 
     def __init__(self) -> None:
         self.conf_path = None
-
+        self.db_name= "general.db"
+        
         self.dict_conf = {
             'db_name': 'general',
             'base_path_experiment': '/home/Develop/Experiment/',
@@ -24,6 +25,7 @@ class ConfigurationHandler:
             'dataset_versioning': False,
             'data_version_tag': '1',
             'data_version_name': 'Dataset.dvc',
+            
         }
 
         self.conf_prefix_path = {"anomalyDetection": "/anomalib_mlops/conf/",
