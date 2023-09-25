@@ -164,15 +164,7 @@ class Dataset(db_instance.db.Model):
     is_selected = Column(Integer, nullable=False, server_default='0')
     current_version = Column(String(10))
     repo_name= Column(String(40))
-    local_path = Column(String(200))
-    git_remote_path = Column(String(200))
-    bitbucket_user= Column(String(60))
-    bitbucket_password= Column(String(60))
-    bitbucket_workspace= Column(String(60))
-    dvc_remote_ssh_user = Column(String(60))
-    dvc_remote_ssh_psw = Column(String(60))
-    dvc_remote_ssh_ip = Column(String(60))
-    dvc_remote_path= Column(String(200))
+    conf_id = db_instance.db.Column(db_instance.db.Integer, db_instance.db.ForeignKey('configuration.id'), nullable=False)
     dataset_version = relationship('DatasetVersion', back_populates='dataset')
 
     def select(self):
@@ -209,6 +201,8 @@ class Configuration(db_instance.db.Model):
     dvc_remote_ssh_psw = Column(String(60))
     dvc_remote_ssh_ip = Column(String(60))
     dvc_remote_path= Column(String(200))
+    
+    datasets = db_instance.db.relationship('Dataset', backref='dataset', lazy=True)
 
 
     

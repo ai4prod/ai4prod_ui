@@ -76,21 +76,15 @@ def dataset():
                              bitbucket_workspace_name=conf.bitbucket_workspace)
 
         datasetHandler.initDataset()
-        git_remote_path = datasetHandler.gitHandler.remote_repo_url
+        #git_remote_path = datasetHandler.gitHandler.remote_repo_url
 
        
         new_dataset = Dataset(init=True,
                               current_version=tag_version,
                               repo_name=repo_name,
-                              local_path=local_path,
-                              git_remote_path=git_remote_path,
-                              bitbucket_user=conf.bitbucket_username,
-                              bitbucket_password=conf.bitbucket_password,
-                              bitbucket_workspace=conf.bitbucket_workspace,
-                              dvc_remote_ssh_user=conf.dvc_remote_ssh_user,
-                              dvc_remote_ssh_psw=conf.dvc_remote_ssh_psw,
-                              dvc_remote_ssh_ip=conf.dvc_remote_ssh_ip,
-                              dvc_remote_path=conf.dvc_remote_path)
+                              conf_id=conf_id
+                              )
+        
         db_instance.db.session.add(new_dataset)
         db_instance.db.session.commit()
         
