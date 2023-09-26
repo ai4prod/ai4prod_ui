@@ -181,12 +181,14 @@ def dataset_statistics(dataset_id):
         print(dataset_version.timestamp)
 
     dataset_query = Dataset.query.filter(Dataset.id == dataset_id).first()
+    conf = Configuration.query.filter(Configuration.id ==dataset_query.conf_id).first()
+    
     datasetHandler.setup(local_repo_path=dataset_query.local_path,
                          dvc_remote_path=dataset_query.dvc_remote_path,
-                         bibucket_username=dataset_query.bitbucket_user,
-                         bitbucket_password=dataset_query.bitbucket_password,
+                         bibucket_username=conf.bitbucket_username,
+                         bitbucket_password=conf.bitbucket_password,
                          bitbucket_repository_name=dataset_query.repo_name,
-                         bitbucket_workspace_name=dataset_query.bitbucket_workspace,
+                         bitbucket_workspace_name=conf.bitbucket_workspace,
                          create_repository=False)
     data_instance.current_dataset_id = dataset_id
     data_instance.repo_name= dataset_query.repo_name
