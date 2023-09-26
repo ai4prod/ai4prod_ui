@@ -20,11 +20,11 @@ Home
         <tbody>
 
           <tr>
-            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset_conf.local_path }}</td>
-            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset_conf.git_remote_path }}</td>
-            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset_conf.current_version }}</td>
+            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.local_path }}</td>
+            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.git_remote_path }}</td>
+            <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.current_version }}</td>
             <td onclick="expandCell(this)" class="text-center truncate-custom">
-              <a class="btn btn-success" href="{{ url_for('home.dataset_statistics', dataset_id = dataset_conf.id) }}">Go</a>
+              <a class="btn btn-success" href="{{ url_for('home.dataset_statistics', dataset_id = dataset.id) }}">Go</a>
             </td>
           </tr>
 
@@ -50,9 +50,16 @@ Home
 
 <script>
   $(document).ready(function () {
+  
+    const jsonData = {
+      "dataset_id": "{{dataset_id}}",
+  };
+
     $('#startTraining').click(function () {
       $.ajax({
         type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(jsonData),
         url: '/start_training',
         success: function (data) {
           $('#result').text(data.result)

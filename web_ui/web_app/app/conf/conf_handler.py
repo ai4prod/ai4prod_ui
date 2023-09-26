@@ -14,8 +14,8 @@ class ConfigurationHandler:
 
     def __init__(self) -> None:
         self.conf_path = None
-        self.db_name= "general.db"
-        
+        self.db_name = "general.db"
+
         self.dict_conf = {
             'db_name': 'general',
             'base_path_experiment': '/home/Develop/Experiment/',
@@ -25,10 +25,10 @@ class ConfigurationHandler:
             'dataset_versioning': False,
             'data_version_tag': '1',
             'data_version_name': 'Dataset.dvc',
-            
+
         }
 
-        self.conf_prefix_path = {"anomalyDetection": "/anomalib_mlops/conf/",
+        self.conf_prefix_path = {"anomaly_detection": "/anomalib_mlops/conf/",
                                  "classification": "/conf/",
                                  "objectDetection": "/FlashObjectDetection/conf/",
                                  "semanticSegmentation": "/conf/",
@@ -64,9 +64,9 @@ class ConfigurationHandler:
         root_exec:
 
         """
-        if (not root_exec == None):
+        if (root_exec != None):
             self.root_exec = root_exec
-        self.conf_path = root_exec + "/gui_cfg.yaml"
+        self.conf_path = self.root_exec + "/gui_cfg.yaml"
         # Create first configuration file if not present
         if not os.path.exists(self.conf_path):
             # Create the YAML file and write the initial dictionary
@@ -75,16 +75,16 @@ class ConfigurationHandler:
             print(f"{self.conf_path} already exists. Read Old Configuration")
             self.read_conf_file()
 
-        conf_relative_path = ""
-
+        
         # generate ml_conf path for task and experiment name
-
-        mlconf_path = self.root_exec + \
-            f"{self.conf_prefix}{self.dict_conf['task']}"
+        conf_relative_path = self.conf_prefix_path[self.dict_conf["task"]]
+        
+        mlconf_path = self.root_exec +  f"{self.conf_prefix}" + self.dict_conf["task"] + "/" + conf_relative_path
 
         print(f"MAIN TASK CONFIGURATION {mlconf_path}")
-        conf_relative_path = self.conf_prefix_path[self.dict_conf["task"]]
-        self.mlconfiguration.create_conf(base_path=mlconf_path,
+
+        
+        self.mlconfiguration.create_task_conf(base_path=mlconf_path,
                                          base_experiment_path=self.dict_conf["base_path_experiment"],
                                          task=self.dict_conf["task"])
 
@@ -206,7 +206,7 @@ class ConfigurationHandler:
     def update_dataset_version(self,
                                dataset_version_tag: str,
                                dataset_id: str,
-                               task:None):
+                               task=None):
         """
         Used to update cfg dataset version
 
@@ -215,21 +215,65 @@ class ConfigurationHandler:
             task: task for training classification, object_detection ecc.. 
         """
 
-        
         dataset_values = {
             "data_version_tag": dataset_version_tag,
             "dataset_id": dataset_id,
         }
-        
+
         if task != None:
-            dataset_values["task"]=task
-            
+            dataset_values["task"] = task
+
         omega_dict_values = {"general_cfg": dataset_values,
                              }
 
         self.update_conf(dict_values=dataset_values,
                          omega_dict_values=omega_dict_values)
 
+    def update_conf_before_training(self,
+                                    task,
+                                    dataset_version_tag,
+                                    dataset_id,
+                                    experiment_name: str,
+                                    dataset_path,
+                                    dataset_versioning=True,):
+        
+        """
+        This function is used to configure dataset location and experiment path before launch a training.
+        
+        task: name of the task to run 
+        dataset_version_tag: which dataset version is used for training
+        experiment_name: name of the experiment. Usually is the repository name
+        dataset_path: local path to dataset
+        dataset_versioning: Used to check if dataset used for training is the same as the one selected.
+        
+        """
+        
+        dataset_values = {
+            "task": task,
+        }
+        
+        # update gui_cfg.yaml with new task
+        self.update_conf(dict_values=dataset_values)
+
+        # create training configuration in ai4prod_python/task
+        self.init()
+        
+        self.update_dataset_version(
+            dataset_id=dataset_id, dataset_version_tag=dataset_version_tag)
+        
+        dataset_values = {"dataset_path": dataset_path,
+                          "dataset_id": dataset_id,
+                          "data_version_tag": dataset_version_tag,
+                          "dataset_versioning": dataset_versioning}
+
+        omega_dict_values = {"general_cfg": dataset_values,
+                             "experiment_name": experiment_name}
+
+        self.update_conf(dict_values=dataset_values,
+                         omega_dict_values=omega_dict_values)
+        
+        self.update_experiment_number_omega_conf()
+        
     def update_gui_cfg_task(self,
                             task,
                             dataset_version_tag,
@@ -242,15 +286,15 @@ class ConfigurationHandler:
         dataset_values = {
             "task": task,
         }
-        #update gui_cfg.yaml with new task
+        # update gui_cfg.yaml with new task
         self.update_conf(dict_values=dataset_values)
-                
-        #create training configuration in ai4prod_python/task
+
+        # create training configuration in ai4prod_python/task
         self.init()
 
-        #after creating new conf update conf value on both gui_cfg.yaml an on OmegaConf task inside ai4prod_python
-        self.update_dataset_version(dataset_id=dataset_id,dataset_version_tag=dataset_version_tag)
-
+        # after creating new conf update conf value on both gui_cfg.yaml an on OmegaConf task inside ai4prod_python
+        self.update_dataset_version(
+            dataset_id=dataset_id, dataset_version_tag=dataset_version_tag)
 
     def update_experiment_number_omega_conf(self,):
         """_summary_
@@ -295,6 +339,9 @@ class ConfigurationHandler:
 
         return OmegaConf.merge(conf, omega_dict_values)
 
+    
+        
+        
     def update_conf(self, dict_values: dict, omega_dict_values=None):
         """
         args:
