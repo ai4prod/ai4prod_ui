@@ -26,10 +26,15 @@ def dataset():
         conf_id = request.form.get('configuration_list')
         conf = Configuration.query.filter(Configuration.id ==conf_id).first()
         
-        print(conf.task)
+        print("Configuration_task " + conf.task)
 
         local_path= configurationHandler.get_dataset_path()
         repo_name = request.form['repo_name']
+        
+        print("LOCAL PATH "+ local_path)
+        
+        
+        #------------------REMOVE THIS
         #Password and used are loaded from configuration file
         # bitbucket_user = request.form['bitbucket_user']
         # bitbucket_password = request.form['bitbucket_password']
@@ -44,55 +49,64 @@ def dataset():
         # dvc_remote_ssh_ip = request.form['dvc_remote_ssh_ip']
         # dvc_remote_path = request.form['dvc_remote_path']
 
+        #------------------- REMOVE THIS
+        
+        
         tag_version = "0"
          
         if(has_trailing_slash(local_path)):
-            local_path= local_path +f"/{conf.task}/"
+            local_path= local_path 
         else:
-            local_path= local_path +f"/{conf.task}/"
+            local_path= local_path + "/"
         
+        #dvc remote
+        dvc_remote_path=configurationHandler.dict_conf["dataset_remote"]+ f"/{conf.task}/{repo_name}Remote/"
+        
+        # if conf.dvc_remote_path is None:
+        #     conf.dvc_remote_path=local_path.split("Dataset/")[0] + remote_path
+        # else:
+        #     if(has_trailing_slash(conf.dvc_remote_path)):
+        #         conf.dvc_remote_path= conf.dvc_remote_path + remote_path
+        #     else:
+        #         conf.dvc_remote_path= conf.dvc_remote_path + remote_path
 
-        remote_path=configurationHandler.dict_conf["dataset_remote"]+ f"/{conf.task}/{repo_name}Remote/"
         
-        if conf.dvc_remote_path is None:
-            conf.dvc_remote_path=local_path.split("Dataset/")[0] + remote_path
-        else:
-            if(has_trailing_slash(conf.dvc_remote_path)):
-                conf.dvc_remote_path= conf.dvc_remote_path + remote_path
-            else:
-                conf.dvc_remote_path= conf.dvc_remote_path + remote_path
-
         
-        print(f"REMOTE PATH {conf.dvc_remote_path}")
+        print(f"REMOTE PATH 2 {dvc_remote_path}")
         
         #-----
         # REPOSITORY SETUP
         #-----
-        datasetHandler.setup(local_repo_path=local_path,
-                             dvc_remote_path=conf.dvc_remote_path,
+        
+        #task is added here in local_repo_path parameter
+        datasetHandler.setup(local_repo_path=local_path +f"{conf.task}/", 
+                             dvc_remote_path=dvc_remote_path,
                              bibucket_username=conf.bitbucket_username,
                              bitbucket_password=conf.bitbucket_password,
                              bitbucket_repository_name=repo_name,
                              bitbucket_workspace_name=conf.bitbucket_workspace)
 
-        datasetHandler.initDataset()
-        #git_remote_path = datasetHandler.gitHandler.remote_repo_url
-
-       
+        datasetHandler.initDataset(task_name=conf.task)
+        
+        
+        #Create Database to db
         new_dataset = Dataset(init=True,
                               current_version=tag_version,
                               repo_name=repo_name,
+                              local_path=local_path+f"{conf.task}/{repo_name}",
+                              git_remote_path=datasetHandler.gitHandler.remote_repo_url,
                               conf_id=conf_id
                               )
         
         db_instance.db.session.add(new_dataset)
         db_instance.db.session.commit()
         
-        #save Cfg to .yaml file
-        configurationHandler.save_dataset_cfg(dataset_path=local_path,
-                                              dataset_id=new_dataset.id,
-                                              dataset_version_tag=tag_version,
-                                              experiment_name=repo_name)
+        #ONLY BEFORE TRAINING
+        # #save Cfg to .yaml file
+        # configurationHandler.save_dataset_cfg(dataset_path=local_path,
+        #                                       dataset_id=new_dataset.id,
+        #                                       dataset_version_tag=tag_version,
+        #                                       experiment_name=repo_name)
 
         # new Dataset will inited always with version 0
         datasetHandler.updateTag(tag_version=tag_version)

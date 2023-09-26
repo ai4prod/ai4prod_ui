@@ -71,7 +71,7 @@
                         <td onclick="expandCell(this)" class="text-center truncate-custom">{{ dataset.git_remote_path }}</td>
                         <td onclick="expandCell(this)" class="text-center truncate-custom">{{dataset.current_version}}</td>
                         <td onclick="expandCell(this)" class="text-center truncate-custom"><a class="btn btn-success" href="{{ url_for('home.dataset_statistics', dataset_id=dataset.id) }}">Go</a></td>
-                        <td class="text-center"><a class="btn btn-primary" href="{{ url_for('home.change_main_dataset', dataset_id= dataset.    id) }}">Cambia</a>
+                        <td class="text-center"><a class="btn btn-primary" href="{{ url_for('home.change_main_dataset', dataset_id= dataset.id) }}">Cambia</a>
                     </tr>
                         {% endif %}
                       

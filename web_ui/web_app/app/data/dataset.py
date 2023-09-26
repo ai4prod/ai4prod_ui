@@ -88,6 +88,8 @@ class GitHandler():
 
         self.repo_name = self.get_last_part_noext(remote_repo_url)
 
+        print("REPO NAME " + self.repo_name )
+        
         self.local_repo_path = local_repo_path + self.repo_name
         self.remote_repo_url = remote_repo_url
 
@@ -321,7 +323,8 @@ class DatasetHandler():
 
         # TODO: This is valid for Bitbucket with ssh configure
         remote_repo_url = f"git@bitbucket.org:{bitbucket_workspace_name}/{bitbucket_repository_name}.git"
-
+        print("SETUP Dataset Handler "+ local_repo_path)
+        
         self.gitHandler = GitHandler(local_repo_path, remote_repo_url)
 
         self.dvcHandler = DvcHandler(local_repo=self.gitHandler.local_repo_path,
@@ -392,16 +395,15 @@ class DatasetHandler():
             shutil.copytree(template_folder_path + folders_to_copy_key,
                             self.gitHandler.local_repo_path + folders_to_copy[folders_to_copy_key])
         data_folders = []
-        print(f"TASK NAME {task_name}")
-        if(task_name == "classification"):
-
-            base_path = self.gitHandler.local_repo_path + "/Data/Dataset/"
-            data_folders = self.get_folders_in_path(base_path=base_path)
-            #Remove all placeholder folders and file on training dataset
-            for data_folder in data_folders:
-                folder_path = base_path + data_folder
-                self.remove_contents_in_folder(folder_path=folder_path)
-                print(f"REMOVE {folder_path}")
+       
+        #Remove all place holder
+        base_path = self.gitHandler.local_repo_path + "/Data/Dataset/"
+        data_folders = self.get_folders_in_path(base_path=base_path)
+        #Remove all placeholder folders and file on training dataset
+        for data_folder in data_folders:
+            folder_path = base_path + data_folder
+            self.remove_contents_in_folder(folder_path=folder_path)
+            print(f"REMOVE {folder_path}")
 
         for file in files_to_copy:
             print(self.gitHandler.local_repo_path + file)
