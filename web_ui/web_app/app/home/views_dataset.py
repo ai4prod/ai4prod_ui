@@ -203,18 +203,22 @@ def update_dataset_version(dataset_id):
     # WARNING removing datasetHandler initialization from dataset_statistics
     # route will cause failure on this
 
+    
     dataset_version_query = DatasetVersion.query.order_by(
         desc(DatasetVersion.timestamp)).first()
 
     new_version = str(int(float(dataset_version_query.tag_version)) + 1)
-
+    
+    dataset_query = Dataset.query.filter(Dataset.id == dataset_id).first()
+    conf = Configuration.query.filter(Configuration.id ==dataset_query.conf_id).first()
+    
     print(f"NEW VERSION {new_version}")
 
     # Update tag to remote
     datasetHandler.updateTag(tag_version=new_version)
     
     #Change Configuration value in .yaml file
-    configurationHandler.update_dataset_version(new_version,dataset_id=dataset_id)
+    configurationHandler.update_dataset_version(new_version,dataset_id=dataset_id,task=conf.task)
 
     
     # #Update tag into db

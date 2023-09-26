@@ -58,4 +58,4 @@ def inject_load():
     
     loss_train=json.dumps(fig,cls= plotly.utils.PlotlyJSONEncoder)
 
-    return {'load1': load[0], 'load5': load[1], 'load15': load[2],"loss_train":loss_train, "dataset_change":data_instance.dataset_change,"repo_name":data_instance.repo_name}
+    return {'load1': load[0], 'load5': load[1], 'load15': load[2],"loss_train":loss_train, "current_dataset_id":data_instance.current_dataset_id,"dataset_change":data_instance.dataset_change,"repo_name":data_instance.repo_name}

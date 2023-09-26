@@ -205,19 +205,25 @@ class ConfigurationHandler:
 
     def update_dataset_version(self,
                                dataset_version_tag: str,
-                               dataset_id: str):
+                               dataset_id: str,
+                               task:None):
         """
         Used to update cfg dataset version
 
         Args:
             dataset_version_tag (str): version of dataset
+            task: task for training classification, object_detection ecc.. 
         """
 
+        
         dataset_values = {
             "data_version_tag": dataset_version_tag,
-            "dataset_id": dataset_id
+            "dataset_id": dataset_id,
         }
-
+        
+        if task != None:
+            dataset_values["task"]=task
+            
         omega_dict_values = {"general_cfg": dataset_values,
                              }
 
