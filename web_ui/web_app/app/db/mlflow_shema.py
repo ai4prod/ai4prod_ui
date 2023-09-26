@@ -166,6 +166,7 @@ class Dataset(db_instance.db.Model):
     repo_name= Column(String(40))
     local_path= Column(String(120))
     git_remote_path= Column(String(120))
+    dvc_remote_path= Column(String(120))
     conf_id = db_instance.db.Column(db_instance.db.Integer, db_instance.db.ForeignKey('configuration.id'), nullable=False)
     dataset_version = relationship('DatasetVersion', back_populates='dataset')
 

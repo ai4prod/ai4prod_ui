@@ -95,6 +95,7 @@ def dataset():
                               repo_name=repo_name,
                               local_path=local_path+f"{conf.task}/{repo_name}",
                               git_remote_path=datasetHandler.gitHandler.remote_repo_url,
+                              dvc_remote_path=dvc_remote_path,
                               conf_id=conf_id
                               )
         
