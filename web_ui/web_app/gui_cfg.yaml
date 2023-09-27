@@ -1,7 +1,7 @@
 base_path_experiment: /home/Develop/Experiment/
 data_version_name: Dataset.dvc
 data_version_tag: '1'
-dataset_path: /home/Develop/Dataset/anomaly_detection//test_fresenius
+dataset_path: /home/Develop/Dataset/
 dataset_remote: /home/Develop/RemoteDataset/
 dataset_versioning: true
 db_name: general

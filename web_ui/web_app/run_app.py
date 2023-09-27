@@ -14,8 +14,7 @@ configurationHandler.init(root_exec=root_exec)
 
 #db_uri = configurationHandler.create_db_path()
 
-db_uri= "sqlite:////"+configurationHandler.dict_conf["base_path_experiment"] + configurationHandler.db_name
-application = create_app("config.DevelopmentConfig", db_uri)
+application = create_app("config.DevelopmentConfig", configurationHandler.database_uri)
 
 
 #After app initialization import turbo_wrapper call

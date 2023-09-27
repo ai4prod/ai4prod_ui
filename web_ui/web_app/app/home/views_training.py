@@ -3,7 +3,8 @@ import flask
 from . import home
 
 from app.conf.conf_handler import configurationHandler
-from .ai4prod_python.classification.train import train_with_hydra
+from .ai4prod_python.classification.train import train_with_hydra as ClassificationTrain
+from .ai4prod_python.anomaly_detection.anomalib_mlops.train import train_with_hydra as AnomalyTrain
 import threading
 
 from app.db.mlflow_shema import Param, Run, Metric, Dataset, Configuration
@@ -31,27 +32,15 @@ def start_training():
         dataset_version_tag=dataset_query.current_version,
         dataset_id=dataset_id,
         experiment_name=dataset_query.repo_name,
-        dataset_path=dataset_query.local_path +f"/{dataset_query.repo_name}"
+        dataset_path=dataset_query.local_path +f"{dataset_query.repo_name}/"
     )
-
-    #  # update task of gui_cfg.yaml
-    # configurationHandler.update_gui_cfg_task(task=conf.task,
-    #                                          dataset_id=dataset_id,
-    #                                          dataset_version_tag=dataset_query.current_version,
-    #                                          )
+    result="training not started"
+    if(conf.task=="anomaly_detection"):
+        my_thread = threading.Thread(target=AnomalyTrain)
+        my_thread.start()
+        result = "Training Started"
     
-    # configurationHandler.save_dataset_cfg(dataset_path=dataset_query.local_path +f"/{dataset_query.repo_name}",
-    #                                       dataset_id=dataset_id,
-    #                                       dataset_version_tag=dataset_query.current_version,
-    #                                       experiment_name=dataset_query.repo_name)
     
-    # #Before start training i need to update the experiment number
-    # configurationHandler.update_experiment_number_omega_conf()
-
-    # my_thread = threading.Thread(target=train_with_hydra)
-    # my_thread.start()
-
-    result = "Training Started"
     return jsonify({"result": result})
 
 
@@ -85,6 +74,8 @@ def training():
     # Retrieve dataset statistics
 
     dataset = Dataset.query.filter(Dataset.is_selected == 1).first()
+
+    
 
     return render_template("page/home/training.html", dataset=dataset, dataset_id=dataset.id)
 

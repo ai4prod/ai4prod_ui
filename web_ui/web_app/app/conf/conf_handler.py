@@ -3,7 +3,7 @@ import os
 from omegaconf import DictConfig, OmegaConf, open_dict
 from app.home.ai4prod_python.ml_utils.ml_utils import setup_path
 from app.home.ai4prod_python.ml_utils.ml_conf.mlconfiguration import MlConfiguration
-
+import time
 
 class ConfigurationHandler:
     """
@@ -14,7 +14,6 @@ class ConfigurationHandler:
 
     def __init__(self) -> None:
         self.conf_path = None
-        self.db_name = "general.db"
 
         self.dict_conf = {
             'db_name': 'general',
@@ -38,7 +37,7 @@ class ConfigurationHandler:
             "bitbucket_user": "",
             "bitbucket_password": ""
         }
-        self.base_path_experiment = "/home/Develop/Experiment/"
+        self.database_uri= "sqlite:////home/Develop/Experiment/general.db"
         self.base_path_configuration = "/home/Develop/Configuration/"
         self.bitbucket_conf_path = "/home/Develop/Configuration/bitbucket_conf.yaml"
         self.onf_task_training = None
@@ -83,6 +82,7 @@ class ConfigurationHandler:
 
         print(f"MAIN TASK CONFIGURATION {mlconf_path}")
 
+       
         
         self.mlconfiguration.create_task_conf(base_path=mlconf_path,
                                          base_experiment_path=self.dict_conf["base_path_experiment"],
@@ -255,19 +255,28 @@ class ConfigurationHandler:
         # update gui_cfg.yaml with new task
         self.update_conf(dict_values=dataset_values)
 
+        time.sleep(0.2)
+        
         # create training configuration in ai4prod_python/task
         self.init()
         
+        time.sleep(0.2)
         self.update_dataset_version(
             dataset_id=dataset_id, dataset_version_tag=dataset_version_tag)
         
-        dataset_values = {"dataset_path": dataset_path,
+        #On gui_cfg.yaml no update to dataset_path
+        dataset_values = {
                           "dataset_id": dataset_id,
                           "data_version_tag": dataset_version_tag,
                           "dataset_versioning": dataset_versioning}
 
-        omega_dict_values = {"general_cfg": dataset_values,
-                             "experiment_name": experiment_name}
+        omeg_conf_values=dataset_values.copy()
+        omeg_conf_values["dataset_path"]=dataset_path
+        
+        
+        omega_dict_values = {"general_cfg": omeg_conf_values,
+                             "experiment_name": experiment_name,
+                             "base_path_experiment":self.dict_conf["base_path_experiment"]+ self.dict_conf["task"] +"/"}
 
         self.update_conf(dict_values=dataset_values,
                          omega_dict_values=omega_dict_values)
