@@ -8,7 +8,8 @@ from app.conf.conf_handler import configurationHandler
 from app.db.database_instance import db_instance
 
 from app.db.mlflow_shema import Param, Run, Metric, Dataset, DatasetVersion, Configuration
-from .ai4prod_python.classification.onnxConversion import convert_to_onnx_with_hydra
+from .ai4prod_python.classification.onnxConversion import convert_to_onnx_with_hydra as ClassificationOnnx
+from .ai4prod_python.anomaly_detection.anomalib_mlops.onnxConversion import convert_to_onnx_with_hydra as AnomalyOnnx
 import threading
 import json
 
@@ -25,9 +26,9 @@ def check_conversion():
     print("CHECK_CONVERSION")
     print(model_path)
 
-    model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\train\\trained_models\\"
-    base_path = model_path.split("train\\", 1)[0]
-    test_configuration_path=base_path + f"test\\dataset_version_{dataset_version}"
+    #model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\train\\trained_models\\"
+    base_path = model_path.split("train/", 1)[0]
+    test_configuration_path=base_path + f"test/dataset_version_{dataset_version}"
 
     configuration=False
     print(test_configuration_path)
@@ -56,10 +57,15 @@ def deploy(experiment_number,dataset_id):
     print(configuration.base_path_experiment)
     print(configuration.task)
     print(dataset.repo_name)
-
-    model_base_path=f"{configuration.base_path_experiment}{configuration.task}/{dataset.repo_name}/exp_{experiment_number}/train/trained_models/"
-
-    model_path= model_base_path + "resnet18.ckpt"
+    model_path=""
+    conversionTask=None
+    model_base_path=f"{configuration.base_path_experiment}{configuration.task}/{dataset.repo_name}/exp_{experiment_number}/train/"
+    
+    if configuration.task=="anomaly_detection":
+        model_base_path= model_base_path + "weights/"
+        model_path= model_base_path + "model.ckpt"
+        conversionTask= AnomalyOnnx
+    
     print(f"MODEL PATH {model_path}")
     
     #Cambio la configurazione di onnx
@@ -67,8 +73,8 @@ def deploy(experiment_number,dataset_id):
 
     #Creo il modello Onnx
 
-    my_thread = threading.Thread(target=convert_to_onnx_with_hydra)
-    my_thread.start()
+    # my_thread = threading.Thread(target=conversionTask)
+    # my_thread.start()
 
     #model_path="C:\\Users\\erict\\OneDrive\\Desktop\\Develop\\ai4prodGuiData\\Experiment\\classification\\test_intel\\exp_6\\train\\trained_models\\"
     base_path = model_path.split("train/", 1)[0]
